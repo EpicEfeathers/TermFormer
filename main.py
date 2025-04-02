@@ -2,7 +2,36 @@ from pynput.keyboard import Listener, Key, KeyCode
 from asciimatics.screen import Screen
 import time
 
-RUNNING = True
+class FrameControl:
+    def __init__(self):
+        self.delta_time = 1
+        self.start_timestamp = time.time()
+        self.total_frames = 1
+
+class GameControls:
+    def __init__(self):
+        self.running = True
+        self.debug_screen = True
+
+    def toggle_debug_screen(self, screen):
+        self.debug_screen = not self.debug_screen
+        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=30, h=6)
+
+    def write_debug_screen(self, screen, player, frame_control):
+        if self.debug_screen:
+            screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=40, h=6)
+            screen.print_at(f"FPS: {round(1/frame_control.delta_time)}", 0, 0)
+
+            time_since_start = time.time() - frame_control.start_timestamp
+            screen.print_at(f"Avg FPS: {round(1 / (time_since_start / frame_control.total_frames))}", 0, 1)
+
+            screen.print_at(f"Y: {"{:.3f}".format(round(player.y, 3))}", 0, 2, Screen.COLOUR_GREEN)
+            screen.print_at(f"Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", 0, 3, Screen.COLOUR_GREEN)
+            screen.print_at(f"Screen height: {screen.height}", 0, 4, Screen.COLOUR_GREEN)
+
+            screen.print_at(f"Tile beneath: {screen.get_from(int(player.x), int(player.y+1))}", 0, 5, Screen.COLOUR_BLUE)
+
+
 
 class Player:
     def __init__(self, screen_width, screen_height):
@@ -12,13 +41,11 @@ class Player:
         self.jumping = False
 
         self.x = int(self.screen_width / 2)
-        #self.y = int(self.screen_height / 2)
         self.y = 0
         self.x_velo = 0
         self.y_velo = 0
         #self.movement_speed_x = 0.01
         self.movement_speed_x = 20
-        #self.movement_speed_y = 0.005
 
         self.old_x = self.x
         self.old_y = self.y
@@ -27,94 +54,90 @@ class Player:
         self.gravity = 200
 
 
-    def udpate_position(self, screen_height, screen_width, DELTA_TIME):
+    def udpate_position(self, screen, DELTA_TIME):
+        # old position to check if moved
         self.old_x = self.x
         self.old_y = self.y
 
-        
+        # x axis movement
         self.x += self.x_velo * self.movement_speed_x * DELTA_TIME
-        #self.y += self.y_velo * self.movement_speed_y   
+
+        # y axis movement
         self.y_velo += self.gravity * DELTA_TIME
         self.y += self.y_velo * DELTA_TIME
 
         # stop flowing off screen
-        if self.y > screen_height:
-            self.y = screen_height - 1
+        if self.y > screen.height:
+            self.y = screen.height - 1
             self.y_velo = 0
         elif self.y < 0:
             self.y = 0
         
         if self.x < 0:
             self.x = 0
-        elif self.x > screen_width:
-            self.x = screen_width - 1
+        elif self.x > screen.width:
+            self.x = screen.width - 1
 
 
 def demo(screen):
+    # on key press
     def on_press(key):
-        if key == KeyCode(char="w"):
-            if player.y >= 10:
-                player.y_velo = -1
-                player.jumping = True
-        elif key == KeyCode(char="a"):
+        # movement
+        if key == KeyCode(char="a"): # move horizontally
             player.x_velo = -1
-        elif key == KeyCode(char="s"):
-            player.y_velo = 1
         elif key == KeyCode(char="d"):
             player.x_velo = 1
-        elif key == Key.space:
-            if player.y > 16:
+        elif (key == Key.space) or (key == KeyCode(char="w")): # jump
+            if player.y > screen.height - 1:
                 #player.y_velo = -0.02
-                player.y_velo = -50
+                player.y_velo = -50 # jump strength
 
+        # other
+        elif key == KeyCode(char="t"): # toggle debug screen on / off
+            game_controls.toggle_debug_screen(screen)
+        if key == Key.esc: # stop program
+            game_controls.running = False
+
+    # on key release
     def on_release(key):
-        if key == KeyCode(char="w") or key == KeyCode(char="s"):
-            player.y_velo = 0
-        elif key == KeyCode(char="a") or key == KeyCode(char="d"):
+        if key == KeyCode(char="a") or key == KeyCode(char="d"): # reset x_velo if key released
             player.x_velo = 0
-        #print(f'{key} released')
-        if key == Key.esc:
-            # Stop listener
-            global RUNNING
-            RUNNING = False
 
 
     player = Player(screen.width, screen.height)
+    game_controls = GameControls()
+    frame_control = FrameControl()
 
     # non-blocking listener for keyboard inputs
     listener = Listener(on_press=on_press,on_release=on_release)
     listener.start()
-    #screen.print_at("███████████████████", int(screen.width/2 - 8), 11)
+    screen.print_at("█████████████████████", int(screen.width/2 - 8), 11)
 
-    total_time = 0.00000000001
-    total_frames = 1
-    delta_time = 1
-
-    while RUNNING:
+    while game_controls.running:
         start = time.time() # start time to calculate delta time
-        player.udpate_position(screen.height, screen.width, delta_time)
+        player.udpate_position(screen, frame_control.delta_time)
 
         #screen = draw_player(screen, p)
         screen.print_at(f"o", int(player.x), int(player.y), Screen.COLOUR_WHITE, Screen.A_BOLD)
+
+        # instead of clearing entire screen, check if player has moved and clear that position
         if (int(player.old_x) != int(player.x)) or (int(player.old_y) != int(player.y)):
             screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=int(player.old_x), y=int(player.old_y), w=1, h=1)
         
+
+        # refresh the display
         screen.refresh()
 
 
-        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=30, h=2)
-        screen.print_at(f"Y: {"{:.3f}".format(round(player.y, 3))}, Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", 0, 0, Screen.COLOUR_GREEN)
-        screen.print_at(f"{round(1/delta_time)} FPS, {round(1/(total_time / total_frames), 5)} Avg FPS", 0, 1)
+        game_controls.write_debug_screen(screen, player, frame_control)
 
 
 
         #time.sleep(1/60)
 
         # calculate delta time
-        delta_time = time.time() - start
-        total_time += delta_time
-        total_frames += 1
-
+        frame_control.delta_time = time.time() - start
+        frame_control.total_frames += 1
 
 
 
