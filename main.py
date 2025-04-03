@@ -1,6 +1,7 @@
 from pynput.keyboard import Listener, Key, KeyCode
 from asciimatics.screen import Screen
 import time
+import random
 
 class FrameControl:
     def __init__(self):
@@ -15,11 +16,11 @@ class GameControls:
 
     def toggle_debug_screen(self, screen):
         self.debug_screen = not self.debug_screen
-        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=30, h=6)
+        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=30, h=7)
 
     def write_debug_screen(self, screen, player, frame_control):
         if self.debug_screen:
-            screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=40, h=6)
+            screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=40, h=7)
             screen.print_at(f"FPS: {round(1/frame_control.delta_time)}", 0, 0)
 
             time_since_start = time.time() - frame_control.start_timestamp
@@ -28,8 +29,10 @@ class GameControls:
             screen.print_at(f"Y: {"{:.3f}".format(round(player.y, 3))}", 0, 2, Screen.COLOUR_GREEN)
             screen.print_at(f"Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", 0, 3, Screen.COLOUR_GREEN)
             screen.print_at(f"Screen height: {screen.height}", 0, 4, Screen.COLOUR_GREEN)
+            screen.print_at(f"Jumping: {player.jumping}", 0, 5, Screen.COLOUR_GREEN)
 
-            screen.print_at(f"Tile beneath: {screen.get_from(int(player.x), int(player.y+1))}", 0, 5, Screen.COLOUR_BLUE)
+            #screen.print_at(f"Tile beneath: {screen.get_from(int(player.x), int(player.y+1))}", 0, 5, Screen.COLOUR_BLUE)
+            screen.print_at(f"Tile beneath: {player.get_tile_beneath(screen)}", 0, 6, Screen.COLOUR_BLUE)
 
 
 
@@ -38,10 +41,10 @@ class Player:
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.jumping = False
+        self.jumping = 0
 
         self.x = int(self.screen_width / 2)
-        self.y = 0
+        self.y = 10
         self.x_velo = 0
         self.y_velo = 0
         #self.movement_speed_x = 0.01
@@ -52,9 +55,15 @@ class Player:
 
         #self.gravity = 0.00003
         self.gravity = 200
+        
+        self.tile_beneath = None
+
+    def get_tile_beneath(self, screen):
+        return screen.get_from(int(self.x), int(self.y + 1))
 
 
     def udpate_position(self, screen, DELTA_TIME):
+        self.jumping += 1
         # old position to check if moved
         self.old_x = self.x
         self.old_y = self.y
@@ -64,12 +73,20 @@ class Player:
 
         # y axis movement
         self.y_velo += self.gravity * DELTA_TIME
-        self.y += self.y_velo * DELTA_TIME
+
+        tile_beneath = self.get_tile_beneath(screen)
+        if tile_beneath is not None and tile_beneath[0] == 9608 and self.jumping > 0: # if tile underneath is block
+            #self.y -= 1
+            self.y_velo = 0
+            self.jumping = 0
+        else:
+            self.y += self.y_velo * DELTA_TIME
 
         # stop flowing off screen
         if self.y > screen.height:
             self.y = screen.height - 1
             self.y_velo = 0
+            self.jumping = 0
         elif self.y < 0:
             self.y = 0
         
@@ -88,9 +105,14 @@ def demo(screen):
         elif key == KeyCode(char="d"):
             player.x_velo = 1
         elif (key == Key.space) or (key == KeyCode(char="w")): # jump
-            if player.y > screen.height - 1:
+            tile_beneath = player.get_tile_beneath(screen)
+            if (tile_beneath is not None and tile_beneath[0] == 9608) and player.jumping == 0:#or (player.y > screen.height - 1):
+            #if player.y > screen.height - 1:
                 #player.y_velo = -0.02
+                player.jumping = -1 # need this because the listener is called first, and always reset the velo
                 player.y_velo = -50 # jump strength
+        elif (key==KeyCode(char="s")):
+            player.y = 1
 
         # other
         elif key == KeyCode(char="t"): # toggle debug screen on / off
@@ -113,6 +135,9 @@ def demo(screen):
     listener.start()
     screen.print_at("█████████████████████", int(screen.width/2 - 8), 11)
 
+    for w in range(screen.width): # for some reason, much faster than drawing a line using https://asciimatics.readthedocs.io/en/stable/io.html#drawing-shapes
+            screen.print_at("█", w, screen.height-1)
+            
     while game_controls.running:
         start = time.time() # start time to calculate delta time
         player.udpate_position(screen, frame_control.delta_time)
@@ -122,16 +147,13 @@ def demo(screen):
 
         # instead of clearing entire screen, check if player has moved and clear that position
         if (int(player.old_x) != int(player.x)) or (int(player.old_y) != int(player.y)):
-            screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=int(player.old_x), y=int(player.old_y), w=1, h=1)
-        
+            screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=int(player.old_x), y=int(player.old_y), w=1, h=1)        
 
         # refresh the display
         screen.refresh()
 
 
         game_controls.write_debug_screen(screen, player, frame_control)
-
-
 
         #time.sleep(1/60)
 
