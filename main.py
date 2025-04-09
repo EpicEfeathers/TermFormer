@@ -5,6 +5,7 @@ import time
 from scripts.player import Player
 from scripts.game_controls import GameControls
 from scripts.frame_control import FrameControl
+from scripts.render_level import LevelRenderer
 
 RUNNING = True
 
@@ -47,6 +48,7 @@ def game(screen):
     player = Player(screen.width, screen.height)
     game_controls = GameControls()
     frame_control = FrameControl()
+    level_renderer = LevelRenderer()
 
     # non-blocking listener for keyboard inputs
     listener = Listener(
@@ -64,7 +66,9 @@ def game(screen):
 
             game_controls.handle_input(screen, player)
 
-            game_controls.render_frame(screen, player, frame_control)
+            #game_controls.render_frame(screen, player, frame_control)
+
+            level_renderer.render_level(screen, player, game_controls, frame_control)
 
             # calculate delta time
             frame_control.frame_render_time = time.time() - frame_start
@@ -77,25 +81,6 @@ def game(screen):
 
 
             frame_control.delta_time = time.time() - frame_start
-    # game loop
-    '''while RUNNING:
-        frame_start = time.time() # start time to calculate delta time
-
-        game_controls.handle_input(screen, player)
-
-        game_controls.render_frame(screen, player, frame_control)
-
-        # calculate delta time
-        frame_control.frame_render_time = time.time() - frame_start
-
-
-        if ((1/60 - frame_control.frame_render_time) > 0):
-            game_controls.time_slept = 1/60 - frame_control.frame_render_time
-            time.sleep(1/60 - frame_control.frame_render_time)
-        frame_control.total_frames += 1 # for calculating avg FPS
-
-
-        frame_control.delta_time = time.time() - frame_start'''
 
 
 while RUNNING:
