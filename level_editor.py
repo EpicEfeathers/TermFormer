@@ -10,6 +10,14 @@ class Pen:
     def __init__(self):
         self.pen_colour = termColours.white
 
+    def print_pen_colour(self, screen):
+        global dimensions
+
+        screen.clear_buffer(x=0, y=dimensions[1] - 1, w=dimensions[0], h=1, fg=termColours.white, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK)
+
+        screen.print_at("Current pen colour: ", 0, dimensions[1] - 1)
+        screen.print_at(f"████ ({self.pen_colour})", len("Current pen colour: "), dimensions[1] - 1, self.pen_colour)
+
 class PopupScreen:
     def __init__(self):
         self.popup_dimensions = (40, 9)
@@ -47,9 +55,9 @@ class PopupScreen:
                 screen.print_at(chr(self.saved_pixels[i][0]), top_left[0] + w, top_left[1] + h, self.saved_pixels[i][1], self.saved_pixels[i][2], self.saved_pixels[i][3]) # char converts ASCII number (e.g. 32) to it's character (e.g. " ")
                 i += 1
 
-    def show_input_text(self, screen):
+    def show_input_text(self, screen, background_color):
         input_text = self.input_text + (" " * (4 - len(self.input_text)))
-        screen.print_at(input_text, int((dimensions[0] - self.input_dimensions[0])/2), int(dimensions[1]/2) + 1, self.text_colour, Screen.A_NORMAL, termColours.white)
+        screen.print_at(input_text, int((dimensions[0] - self.input_dimensions[0])/2), int(dimensions[1]/2) + 1, self.text_colour, Screen.A_NORMAL, background_color)
 
     def show_popup(self, screen):
         # create rectangle
@@ -68,7 +76,7 @@ class PopupScreen:
         screen.print_at(text3, int((dimensions[0] - len(text3))/2), int(dimensions[1]/2) - 1, self.text_colour, Screen.A_NORMAL, self.popup_colour)
 
         # add input box
-        self.show_input_text(screen)
+        self.show_input_text(screen, termColours.white)
 
         # add button
         button_text = " Colour diagram (click me!) "
@@ -78,21 +86,34 @@ class PopupScreen:
         if len(self.input_text) <= 2:
             self.input_text += str(keyboard_event_number_conversion[digit])
             
-            self.show_input_text(screen)
+            self.show_input_text(screen, termColours.white)
 
     def delete_popup_text(self, screen):
         if len(self.input_text) >= 1:
             self.input_text = self.input_text[:-1]
             
-            self.show_input_text(screen)
+            self.show_input_text(screen, termColours.white)
 
-    def check_if_valid(self, screen, pen):
+    def check_if_valid(self, showing_popup_screen, screen, pen):
+        if self.input_text == "": # if user provides no colour, set it to white
+            self.input_text = 15
         if 0 <= int(self.input_text) <= 255:
             pen.pen_colour = int(self.input_text)
 
-            screen.print_at("Current pen colour: ", 0, dimensions[1] - 1)
-            screen.print_at("████", len("Current pen colour: "), dimensions[1] - 1, pen.pen_colour)
+            pen.print_pen_colour(screen)
+
+            # recreate the covered pixels under the popup
+            self.recreate_under_popup(screen)
             screen.refresh()
+
+            self.input_text = "" # set the input field to empty for next time
+
+            return False
+        else:
+            self.show_input_text(screen, termColours.red)
+            screen.refresh()
+
+            return True
 
 
 
@@ -127,8 +148,7 @@ def demo(screen):
         check_dimensions(screen, dimensions)
     else:
         screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
-        screen.print_at("Current pen colour: ", 0, dimensions[1] - 1)
-        screen.print_at("████", len("Current pen colour: "), dimensions[1] - 1, pen.pen_colour)
+        pen.print_pen_colour(screen)
         screen.refresh()
         while not screen.has_resized(): # if screen is correct size
 
@@ -162,9 +182,7 @@ def demo(screen):
             elif isinstance(event, KeyboardEvent):
                 if event.key_code == 10:
                     if showing_popup_screen:
-                        showing_popup_screen = False # WORK ON THIS
-                        popup.check_if_valid(screen, pen)
-                        popup.recreate_under_popup(screen)
+                        showing_popup_screen = popup.check_if_valid(showing_popup_screen, screen, pen)
                     else:
                         popup.save_under_popup(screen)
                         popup.show_popup(screen)
