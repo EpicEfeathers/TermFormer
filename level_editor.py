@@ -6,6 +6,8 @@ from config import termColours, keyboard_event_number_conversion
 
 dimensions = (150, 31)
 
+
+
 class Pen:
     def __init__(self):
         self.pen_colour = termColours.white
@@ -13,10 +15,29 @@ class Pen:
     def print_pen_colour(self, screen):
         global dimensions
 
-        screen.clear_buffer(x=0, y=dimensions[1] - 1, w=dimensions[0], h=1, fg=termColours.white, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK)
+        screen.clear_buffer(x=0, y=dimensions[1] - 1, w=35, h=1, fg=termColours.white, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK)
 
         screen.print_at("Current pen colour: ", 0, dimensions[1] - 1)
         screen.print_at(f"████ ({self.pen_colour})", len("Current pen colour: "), dimensions[1] - 1, self.pen_colour)
+
+class Tool:
+    def __init__(self):
+        self.tool_type = "pen"
+
+    def change_tool_type(self):
+        if self.tool_type == "pen":
+            self.tool_type = "dropper"
+        else:
+            self.tool_type = "pen"
+    
+    def print_tool_type(self, screen):
+        global dimensions
+
+        screen.clear_buffer(x=dimensions[0] - 35, y=dimensions[1] - 1, w=35, h=1, fg=termColours.white, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK)
+
+        text = "Tool: "
+        screen.print_at(f"{text}{self.tool_type.capitalize()}", dimensions[0] - len(self.tool_type) - len(text), dimensions[1] - 1)
+
 
 class PopupScreen:
     def __init__(self):
@@ -45,13 +66,12 @@ class PopupScreen:
     def recreate_under_popup(self, screen):
         top_left = (int((dimensions[0]-self.popup_dimensions[0])/2), int((dimensions[1]-self.popup_dimensions[1])/2))
 
-        screen.clear_buffer(x=top_left[0], y=top_left[1], w=self.popup_dimensions[0], h=self.popup_dimensions[1], fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
+        screen.clear_buffer(x=top_left[0], y=top_left[1], w=self.popup_dimensions[0], h=self.popup_dimensions[1], fg=termColours.sky_blue, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         
         # recreate every pixel covered by the popup
         i = 0
         for h in range(self.popup_dimensions[1]):
             for w in range(self.popup_dimensions[0]):
-                screen.print_at(self.saved_pixels[i], 0, 0)
                 screen.print_at(chr(self.saved_pixels[i][0]), top_left[0] + w, top_left[1] + h, self.saved_pixels[i][1], self.saved_pixels[i][2], self.saved_pixels[i][3]) # char converts ASCII number (e.g. 32) to it's character (e.g. " ")
                 i += 1
 
@@ -143,44 +163,53 @@ def demo(screen):
 
     popup = PopupScreen()
     pen = Pen()
+    tool = Tool()
 
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
     else:
-        screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
+        screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=termColours.sky_blue, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         pen.print_pen_colour(screen)
+        tool.print_tool_type(screen)
         screen.refresh()
         while not screen.has_resized(): # if screen is correct size
 
             event = screen.get_event()
             if isinstance(event, MouseEvent):
                 if not showing_popup_screen:
-                    if event.buttons == 0: # mouse up
-                        mouse_up = [event.x, event.y]
-                    elif event.buttons == 1: # mouse down
-                        mouse_down = [event.x, event.y]
-                        mouse_up = None
+                    if tool.tool_type == "pen": # if using pen tool
+                        if event.buttons == 0: # mouse up
+                            mouse_up = [event.x, event.y]
+                        elif event.buttons == 1: # mouse down
+                            mouse_down = [event.x, event.y]
+                            mouse_up = None
 
-                    screen.print_at(mouse_down, 0, 0)
-                    screen.print_at(mouse_up, 0, 1)
+                        #screen.print_at(mouse_down, 0, 0)
+                        #screen.print_at(mouse_up, 0, 1)
 
-                    if mouse_up and mouse_down:
-                        mouse_up[1] = min((dimensions[1] - 2), mouse_up[1]) # make sure can't draw off bottom of screen
-                        mouse_down[1] = min((dimensions[1] - 2), mouse_down[1])
+                        if mouse_up and mouse_down:
+                            mouse_up[1] = min((dimensions[1] - 2), mouse_up[1]) # make sure can't draw off bottom of screen
+                            mouse_down[1] = min((dimensions[1] - 2), mouse_down[1])
 
-                        screen.move(*mouse_down) # * unpacks tuple
-                        screen.draw(*mouse_up, char="█", colour=pen.pen_colour, thin=True)
+                            screen.move(*mouse_down) # * unpacks tuple
+                            screen.draw(*mouse_up, char="█", colour=pen.pen_colour, thin=True)
 
-                    if event.y < dimensions[1] - 1: # prevent drawing at bottom of screen
-                        screen.print_at("█", event.x, event.y, pen.pen_colour) # print at cursor
-                    screen.refresh()
-                else: # if click on button
+                        if event.y < dimensions[1] - 1: # prevent drawing at bottom of screen
+                            screen.print_at("█", event.x, event.y, pen.pen_colour) # print at cursor
+                        screen.refresh()
+                    else: # if using dropper tool
+                        if event.buttons == 1: # mouse down
+                            pixel = screen.get_from(event.x, event.y)
+                            pen.pen_colour = pixel[1] # get colour from pixel
+                            pen.print_pen_colour(screen)
+                            screen.refresh()
+                else: # if click on popup button
                     if event.buttons == 1:
                         if event.y == 18 and 61 <= event.x <= 89:
                             webbrowser.open('https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg') # open colour diagram in browser
 
             elif isinstance(event, KeyboardEvent):
-                if event.key_code == 10:
+                if event.key_code == 10: # enter key
                     if showing_popup_screen:
                         showing_popup_screen = popup.check_if_valid(showing_popup_screen, screen, pen)
                     else:
@@ -190,11 +219,16 @@ def demo(screen):
                     screen.refresh()
                 else:
                     if showing_popup_screen:
-                        if 48 <= event.key_code <= 57:
+                        if 48 <= event.key_code <= 57: # keys 0-9
                             popup.edit_popup_text(screen, event.key_code)
                             screen.refresh()
-                        elif event.key_code == -300:
+                        elif event.key_code == -300: # del key
                             popup.delete_popup_text(screen)
+                            screen.refresh()
+                    else:
+                        if event.key_code == 32: # space key
+                            tool.change_tool_type()
+                            tool.print_tool_type(screen)
                             screen.refresh()
 while True:
     Screen.wrapper(demo)
