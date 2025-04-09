@@ -1,7 +1,7 @@
 from pynput.keyboard import Key, KeyCode
 from asciimatics.screen import Screen
 import time
-from config import termColors
+from config import termColours
 
 class GameControls:
     global RUNNING
@@ -48,7 +48,7 @@ class GameControls:
             self.current_line_right = 0
 
             # function for printing debug statements easier
-            def print_debug_line(text, position, colour=termColors.white): # 15 = white
+            def print_debug_line(text, position, colour=termColours.white): # 15 = white
                 if position == "left":
                     screen.print_at(text, 0, self.current_line_left, colour, Screen.A_NORMAL, background_color)
                     self.current_line_left += 1
@@ -65,13 +65,13 @@ class GameControls:
             print_debug_line(f"Delta Time: {"{:.4f}".format(frame_control.delta_time)}", "left")
             print_debug_line(f"FPS if uncapped: {round(1/frame_control.frame_render_time)}", "left")
 
-            print_debug_line(f"XY: {"{:.3f}".format(round(player.y, 3))} {"{:.3f}".format(round(player.x, 3))}", "left", termColors.light_green) # 154 is light green
-            print_debug_line(f"X velo: {"{:.3f}".format(round(player.x_velo, 3))}", "left", termColors.light_green)
-            print_debug_line(f"Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", "left", termColors.light_green)
+            print_debug_line(f"XY: {"{:.3f}".format(round(player.y, 3))} {"{:.3f}".format(round(player.x, 3))}", "left", termColours.light_green) # 154 is light green
+            print_debug_line(f"X velo: {"{:.3f}".format(round(player.x_velo, 3))}", "left", termColours.light_green)
+            print_debug_line(f"Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", "left", termColours.light_green)
             #print_debug_line(f"Running: {RUNNING}", "left", Screen.COLOUR_CYAN)
 
             print_debug_line(f"Tiles: {player.get_tiles_surrounding(screen)}", "right", Screen.COLOUR_BLUE)
             
-            print_debug_line(f"Keys: {self.keys}", "right", termColors.yellow)
+            print_debug_line(f"Keys: {self.keys}", "right", termColours.yellow)
 
-            print_debug_line(f"Sleep time: {"{:.3f}".format(self.time_slept)}", "right", termColors.yellow)
+            print_debug_line(f"Sleep time: {"{:.3f}".format(self.time_slept)}", "right", termColours.yellow)

@@ -1,4 +1,4 @@
-class termColors:
+class termColours:
     light_green = 154
     white = 15
     yellow = 11

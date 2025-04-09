@@ -1,12 +1,12 @@
 import json
 from asciimatics.screen import Screen
-from config import termColors
+from config import termColours
 
 class LevelRenderer:
     def __init__(self):
         with open("data/level0.json", "r") as file:
             self.level_data = json.load(file)
-            self.background_color = termColors.sky_blue
+            self.background_color = termColours.sky_blue
 
     def render_level(self, screen, player, game_controls, frame_control):
         screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=self.background_color) # use this over clear https://asciimatics.readthedocs.io/en/stable/asciimatics.html#asciimatics.screen.Screen.clear_buffer
