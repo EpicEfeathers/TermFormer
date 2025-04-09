@@ -66,11 +66,9 @@ def game(screen):
 
             game_controls.handle_input(screen, player)
 
-            #game_controls.render_frame(screen, player, frame_control)
-
             level_renderer.render_level(screen, player, game_controls, frame_control)
 
-            # calculate delta time
+            # calculate the time it takes to render this frame
             frame_control.frame_render_time = time.time() - frame_start
 
 
@@ -79,7 +77,7 @@ def game(screen):
                 time.sleep(1/60 - frame_control.frame_render_time)
             frame_control.total_frames += 1 # for calculating avg FPS
 
-
+            # calculate this frames delta time (render time + sleep time)
             frame_control.delta_time = time.time() - frame_start
 
 

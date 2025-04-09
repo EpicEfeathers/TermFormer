@@ -1,27 +1,30 @@
 import json
 from asciimatics.screen import Screen
+from config import termColors
 
 class LevelRenderer:
     def __init__(self):
         with open("data/level0.json", "r") as file:
             self.level_data = json.load(file)
+            self.background_color = termColors.sky_blue
 
     def render_level(self, screen, player, game_controls, frame_control):
-        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK) # use this over clear https://asciimatics.readthedocs.io/en/stable/asciimatics.html#asciimatics.screen.Screen.clear_buffer
+        screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=self.background_color) # use this over clear https://asciimatics.readthedocs.io/en/stable/asciimatics.html#asciimatics.screen.Screen.clear_buffer
 
+        # redner tiles
         for h, row_data in enumerate(self.level_data):
             for w, tile in enumerate(row_data):
                 if tile['char'] != " ":
                     screen.print_at(tile['char'], w, h, tile['colour'])
 
-        game_controls.write_debug_screen(screen, player, frame_control)#, game_controls)
+        # write debug screen
+        game_controls.write_debug_screen(screen, player, frame_control, self.background_color)
 
+        # update player position
         player.update_position(screen, game_controls, frame_control.delta_time)
 
-        #screen = draw_player(screen, p)
-        screen.print_at(f"o", int(player.x), int(player.y), Screen.COLOUR_WHITE, Screen.A_BOLD)
+        # render player
+        screen.print_at(f"o", int(player.x), int(player.y), Screen.COLOUR_WHITE, Screen.A_BOLD, self.background_color)
 
         # refresh the display
-        screen.refresh()
-
         screen.refresh()
