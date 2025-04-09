@@ -2,7 +2,7 @@ from asciimatics.screen import Screen
 from asciimatics.event import MouseEvent, KeyboardEvent
 import webbrowser
 
-from config import termColors
+from config import termColors, keyboard_event_number_conversion
 
 dimensions = (150, 31)
 
@@ -12,6 +12,13 @@ class popup_screen:
         self.dimensions = dimensions
         self.popup_colour = termColors.popup_gray
         self.text_colour = termColors.black
+
+        self.input_dimensions = (4, 1)
+        self.input_text = ""
+
+    def show_input_text(self, screen):
+        input_text = self.input_text + (" " * (4 - len(self.input_text)))
+        screen.print_at(input_text, int((dimensions[0] - self.input_dimensions[0])/2), int(dimensions[1]/2), self.text_colour, Screen.A_NORMAL, termColors.white)
 
     def show_popup(self, screen):
         # create rectangle
@@ -26,12 +33,24 @@ class popup_screen:
         screen.print_at(text, int((dimensions[0] - len(text))/2), int(dimensions[1]/2) - 2, self.text_colour, Screen.A_NORMAL, self.popup_colour)
 
         # add input box
-        input_dimensions = (4, 1)
-        screen.print_at("    ", int((dimensions[0] - input_dimensions[0])/2), int(dimensions[1]/2), self.text_colour, Screen.A_NORMAL, termColors.white)
+        self.show_input_text(screen)
 
         # add button
         button_text = " Colour diagram (click me!) "
         screen.print_at(button_text, int((dimensions[0] - len(button_text))/2), int(dimensions[1]/2) + 2, self.text_colour, Screen.A_NORMAL, termColors.white)
+
+    def edit_popup_text(self, screen, digit):
+        if len(self.input_text) <= 2:
+            self.input_text += str(keyboard_event_number_conversion[digit])
+            
+            self.show_input_text(screen)
+
+    def delete_popup_text(self, screen):
+        if len(self.input_text) >= 1:
+            self.input_text = self.input_text[:-1]
+            
+            self.show_input_text(screen)
+
 
 
 
@@ -59,6 +78,8 @@ def demo(screen):
     global dimensions
     showing_popup_screen = False
 
+    popup = popup_screen()
+
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
     else:
@@ -67,7 +88,6 @@ def demo(screen):
         screen.print_at("blue", len("Current colour: "), dimensions[1] - 1, Screen.COLOUR_BLUE)
         screen.refresh()
         while not screen.has_resized(): # if screen is correct size
-            popup = popup_screen()
 
             event = screen.get_event()
             if isinstance(event, MouseEvent):
@@ -107,7 +127,10 @@ def demo(screen):
                 else:
                     if showing_popup_screen:
                         if 48 <= event.key_code <= 57:
-                            screen.print_at(event, 0, 0)
+                            popup.edit_popup_text(screen, event.key_code)
+                            screen.refresh()
+                        elif event.key_code == -300:
+                            popup.delete_popup_text(screen)
                             screen.refresh()
 while True:
     Screen.wrapper(demo)
