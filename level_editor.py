@@ -272,20 +272,21 @@ def demo(screen):
                             webbrowser.open('https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg') # open colour diagram in browser
 
             elif isinstance(event, KeyboardEvent):
-                if event.key_code == 10: # enter key to open colour input
-                    if showing_popup_screen:
+                if showing_popup_screen:
+                    if event.key_code == 10: # enter key to open colour input
                         showing_popup_screen = colour_input_popup.check_valid_input(screen, pen) # check if input is valid
                     else:
-                        colour_input_popup.show_popup(screen)
-                        showing_popup_screen = True
+                        colour_input_popup.handle_inputs(event, screen)
                     screen.refresh()
                 else:
-                    if showing_popup_screen:
-                        colour_input_popup.handle_inputs(event, screen)
-                    else:
-                        if event.key_code == 32: # space key
-                            tool.change_tool_type()
-                            tool.print_tool_type(screen)
-                            screen.refresh()
+                    if event.key_code == 10: # enter key to open colour input
+                        colour_input_popup.show_popup(screen)
+                        showing_popup_screen = True
+                        screen.refresh()
+                    elif event.key_code == 32: # space key
+                        tool.change_tool_type()
+                        tool.print_tool_type(screen)
+                        screen.refresh()
+
 while True:
     Screen.wrapper(demo)
