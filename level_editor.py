@@ -6,6 +6,19 @@ from config import termColours, keyboard_event_number_conversion
 
 dimensions = (150, 31)
 
+class Help:
+    def __init__(self):
+        self.showing_help_screen = False
+
+
+
+    def print_help_tip_text(self, screen):
+        global dimensions
+        text = "Press H for help"
+        #text = "|Click or drag to draw |Press S to save | Press Enter to change colour | Press Space to change tool"
+
+        position = (int((dimensions[0] - len(text))/2), dimensions[1] - 1)
+        screen.print_at(text, *position)
 
 
 class Pen:
@@ -39,7 +52,7 @@ class Tool:
         screen.print_at(f"{text}{self.tool_type.capitalize()}", dimensions[0] - len(self.tool_type) - len(text), dimensions[1] - 1)
 
 
-class PopupScreen:
+class ColourInputPopup:
     def __init__(self):
         self.popup_dimensions = (40, 9)
         self.dimensions = dimensions
@@ -115,8 +128,8 @@ class PopupScreen:
             self.show_input_text(screen, termColours.white)
 
     def check_if_valid(self, showing_popup_screen, screen, pen):
-        if self.input_text == "": # if user provides no colour, set it to white
-            self.input_text = 15
+        if self.input_text == "": # if user provides no colour, set the colour to the current colour
+            self.input_text = pen.pen_colour
         if 0 <= int(self.input_text) <= 255:
             pen.pen_colour = int(self.input_text)
 
@@ -161,9 +174,10 @@ def demo(screen):
     global dimensions
     showing_popup_screen = False
 
-    popup = PopupScreen()
+    colour_input_popup = ColourInputPopup()
     pen = Pen()
     tool = Tool()
+    help = Help()
 
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
@@ -171,6 +185,7 @@ def demo(screen):
         screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=termColours.sky_blue, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         pen.print_pen_colour(screen)
         tool.print_tool_type(screen)
+        help.print_help_tip_text(screen)
         screen.refresh()
         while not screen.has_resized(): # if screen is correct size
 
@@ -211,19 +226,19 @@ def demo(screen):
             elif isinstance(event, KeyboardEvent):
                 if event.key_code == 10: # enter key
                     if showing_popup_screen:
-                        showing_popup_screen = popup.check_if_valid(showing_popup_screen, screen, pen)
+                        showing_popup_screen = colour_input_popup.check_if_valid(showing_popup_screen, screen, pen)
                     else:
-                        popup.save_under_popup(screen)
-                        popup.show_popup(screen)
+                        colour_input_popup.save_under_popup(screen)
+                        colour_input_popup.show_popup(screen)
                         showing_popup_screen = True
                     screen.refresh()
                 else:
                     if showing_popup_screen:
                         if 48 <= event.key_code <= 57: # keys 0-9
-                            popup.edit_popup_text(screen, event.key_code)
+                            colour_input_popup.edit_popup_text(screen, event.key_code)
                             screen.refresh()
                         elif event.key_code == -300: # del key
-                            popup.delete_popup_text(screen)
+                            colour_input_popup.delete_popup_text(screen)
                             screen.refresh()
                     else:
                         if event.key_code == 32: # space key
