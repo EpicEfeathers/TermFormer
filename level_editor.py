@@ -52,16 +52,11 @@ class Tool:
         screen.print_at(f"{text}{self.tool_type.capitalize()}", dimensions[0] - len(self.tool_type) - len(text), dimensions[1] - 1)
 
 
-class ColourInputPopup:
-    def __init__(self):
-        self.popup_dimensions = (40, 9)
-        self.dimensions = dimensions
-        self.popup_colour = termColours.popup_gray
-        self.text_colour = termColours.black
-
-        self.input_dimensions = (4, 1)
-        self.input_text = ""
-
+class Popup:
+    def __init__(self, popup_dimensions, text_colour, popup_colour):
+        self.popup_dimensions = popup_dimensions
+        self.text_colour = text_colour
+        self.popup_colour  = popup_colour
 
     def save_under_popup(self, screen):
         '''
@@ -88,11 +83,7 @@ class ColourInputPopup:
                 screen.print_at(chr(self.saved_pixels[i][0]), top_left[0] + w, top_left[1] + h, self.saved_pixels[i][1], self.saved_pixels[i][2], self.saved_pixels[i][3]) # char converts ASCII number (e.g. 32) to it's character (e.g. " ")
                 i += 1
 
-    def show_input_text(self, screen, background_color):
-        input_text = self.input_text + (" " * (4 - len(self.input_text)))
-        screen.print_at(input_text, int((dimensions[0] - self.input_dimensions[0])/2), int(dimensions[1]/2) + 1, self.text_colour, Screen.A_NORMAL, background_color)
-
-    def show_popup(self, screen):
+    def create_background(self, screen):
         # create rectangle
         start_pos = (int((dimensions[0]-self.popup_dimensions[0])/2), int((dimensions[1]-self.popup_dimensions[1])/2))
         top_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1])
@@ -100,32 +91,62 @@ class ColourInputPopup:
         bottom_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1] + self.popup_dimensions[1])
         screen.fill_polygon([[(start_pos), (top_right), (bottom_right), (bottom_left)]], colour=self.popup_colour)
 
+    def add_text(self, text, screen, x, y):
+        screen.print_at(text, x, y, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+
+    def add_button(self, screen, button_text, x, y):
+        screen.print_at(button_text, x, y, self.text_colour, Screen.A_NORMAL, termColours.white)
+
+    def show_input_text(self, screen, background_color, input_text, input_dimensions, x, y):
+        input_text = input_text + (" " * (input_dimensions[0] - len(input_text)))
+        screen.print_at(input_text, x, y, self.text_colour, Screen.A_NORMAL, background_color)
+
+
+
+class ColourInputPopup:
+    def __init__(self):
+        self.popup_dimensions = (40, 9)
+        self.dimensions = dimensions
+        self.popup_colour = termColours.popup_gray
+        self.text_colour = termColours.black
+
+        self.input_dimensions = (4, 1)
+        self.input_text = ""
+
+        self.popup_creator = Popup(self.popup_dimensions, self.text_colour, self.popup_colour)
+
+
+    def show_popup(self, screen):
+        self.popup_creator.save_under_popup(screen)
+        # create rectangle
+        self.popup_creator.create_background(screen)
+
         # add text
         text = "Input terminal colour (0-255):"
-        screen.print_at(text, int((dimensions[0] - len(text))/2), int(dimensions[1]/2) - 3, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+        self.popup_creator.add_text(text, screen, x=int((dimensions[0] - len(text))/2), y=int(dimensions[1]/2) - 3)
         text2 = "Type numbers 0-9, Del to delete"
-        screen.print_at(text2, int((dimensions[0] - len(text2))/2), int(dimensions[1]/2) - 2, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+        self.popup_creator.add_text(text2, screen, x=int((dimensions[0] - len(text2))/2), y=int(dimensions[1]/2) - 2)
         text3 = "Press Enter again to confirm"
-        screen.print_at(text3, int((dimensions[0] - len(text3))/2), int(dimensions[1]/2) - 1, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+        self.popup_creator.add_text(text3, screen, x=int((dimensions[0] - len(text3))/2), y=int(dimensions[1]/2) - 1)
 
         # add input box
-        self.show_input_text(screen, termColours.white)
+        self.popup_creator.show_input_text(screen, termColours.white, self.input_text, self.input_dimensions, x=int((dimensions[0] - self.input_dimensions[0])/2), y=int(dimensions[1]/2) + 1)
 
         # add button
         button_text = " Colour diagram (click me!) "
-        screen.print_at(button_text, int((dimensions[0] - len(button_text))/2), int(dimensions[1]/2) + 3, self.text_colour, Screen.A_NORMAL, termColours.white)
+        self.popup_creator.add_button(screen, button_text, x=int((dimensions[0] - len(button_text))/2), y=int(dimensions[1]/2) + 3)
 
     def edit_popup_text(self, screen, digit):
         if len(self.input_text) <= 2:
             self.input_text += str(keyboard_event_number_conversion[digit])
             
-            self.show_input_text(screen, termColours.white)
+            self.popup_creator.show_input_text(screen, termColours.white, self.input_text, self.input_dimensions, x=int((dimensions[0] - self.input_dimensions[0])/2), y=int(dimensions[1]/2) + 1)
 
     def delete_popup_text(self, screen):
         if len(self.input_text) >= 1:
             self.input_text = self.input_text[:-1]
             
-            self.show_input_text(screen, termColours.white)
+            self.popup_creator.show_input_text(screen, termColours.white, self.input_text, self.input_dimensions, x=int((dimensions[0] - self.input_dimensions[0])/2), y=int(dimensions[1]/2) + 1)
 
     def check_if_valid(self, showing_popup_screen, screen, pen):
         if self.input_text == "": # if user provides no colour, set the colour to the current colour
@@ -136,14 +157,14 @@ class ColourInputPopup:
             pen.print_pen_colour(screen)
 
             # recreate the covered pixels under the popup
-            self.recreate_under_popup(screen)
+            self.popup_creator.recreate_under_popup(screen)
             screen.refresh()
 
             self.input_text = "" # set the input field to empty for next time
 
             return False
         else:
-            self.show_input_text(screen, termColours.red)
+            self.popup_creator.show_input_text(screen, termColours.red, self.input_text, self.input_dimensions, x=int((dimensions[0] - self.input_dimensions[0])/2), y=int(dimensions[1]/2) + 1)
             screen.refresh()
 
             return True
@@ -228,7 +249,7 @@ def demo(screen):
                     if showing_popup_screen:
                         showing_popup_screen = colour_input_popup.check_if_valid(showing_popup_screen, screen, pen)
                     else:
-                        colour_input_popup.save_under_popup(screen)
+                        #colour_input_popup.save_under_popup(screen)
                         colour_input_popup.show_popup(screen)
                         showing_popup_screen = True
                     screen.refresh()
