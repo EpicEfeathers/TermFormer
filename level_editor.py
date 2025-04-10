@@ -6,19 +6,67 @@ from config import termColours, keyboard_event_number_conversion
 
 dimensions = (150, 31)
 
-class Help:
+def create_colour_list(text, words_to_change: list, base_text_colour: int, background_color:int, highlight_text_colour: int):
+    colour_list = [(base_text_colour, Screen.A_NORMAL, background_color)] * len(text)
+    for word in words_to_change:
+        start = (text.find(word))
+        length = len(word)
+        for i in range(start, start + length): # start pos, end pos
+            colour_list[i] = (highlight_text_colour, Screen.A_NORMAL, background_color)
+    return colour_list
+
+class HelpPopup:
     def __init__(self):
-        self.showing_help_screen = False
+        self.popup_dimensions = (40, 11)
+        self.text_colour = termColours.black
+        self.popup_colour = termColours.popup_gray
 
+        self.showing_help_popup = False
 
+        self.popup_creator = PopupCreator(self.popup_dimensions, self.text_colour, self.popup_colour)
 
     def print_help_tip_text(self, screen):
         global dimensions
         text = "Press H for help"
-        #text = "|Click or drag to draw |Press S to save | Press Enter to change colour | Press Space to change tool"
 
         position = (int((dimensions[0] - len(text))/2), dimensions[1] - 1)
-        screen.print_at(text, *position)
+        colour_list = create_colour_list(text, ["H"], Screen.COLOUR_WHITE, background_color=Screen.COLOUR_BLACK, highlight_text_colour=termColours.white)
+        screen.paint(text, *position, colour_map=colour_list)
+
+    def show_popup(self, screen):
+        '''def create_colour_range(words:list, text):
+            colour_list = [(Screen.COLOUR_WHITE, Screen.A_NORMAL, Screen.COLOUR_BLACK)] * len(text)
+            for word in words:
+                start = (text.lower().find(word))
+                length = len(word)
+                for i in range(start, start + length): # start pos, end pos
+                    colour_list[i] = (termColours.white,0,0)
+            return colour_list'''
+
+        self.popup_creator.save_under_popup(screen)
+        # create rectangle
+        self.popup_creator.create_background(screen)
+
+        # add text
+        text = "Click or drag to draw"
+        self.popup_creator.add_coloured_text(text, ["Click", "drag"], screen, y=int(dimensions[1]/2) - 4)
+        text2 = "Press S to save"
+        self.popup_creator.add_coloured_text(text2, ["S"], screen, y=int(dimensions[1]/2) - 2)
+        text3 = "Press Enter to change colour"
+        self.popup_creator.add_coloured_text(text3, ["Enter"], screen, y=int(dimensions[1]/2))
+        text4 = "Press Space to change tool"
+        self.popup_creator.add_coloured_text(text4, ["Space"], screen, y=int(dimensions[1]/2) + 2)
+        text5 = "Press H again to close"
+        self.popup_creator.add_coloured_text(text5, ["H"], screen, y=int(dimensions[1]/2) + 4)
+
+        screen.refresh()
+        self.showing_help_popup = True
+
+    def hide_popup(self, screen):
+        self.popup_creator.recreate_under_popup(screen)
+
+        screen.refresh()
+        self.showing_help_popup = False
 
 
 class Pen:
@@ -48,12 +96,13 @@ class Tool:
 
         screen.clear_buffer(x=dimensions[0] - 35, y=dimensions[1] - 1, w=35, h=1, fg=termColours.white, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK)
 
-        text = "Tool: "
-        screen.print_at(f"{text}{self.tool_type.capitalize()}", dimensions[0] - len(self.tool_type) - len(text), dimensions[1] - 1)
+        text = f"Tool: {self.tool_type.capitalize()}"
+        colour_list = create_colour_list(text, [self.tool_type.capitalize()], Screen.COLOUR_WHITE, background_color=Screen.COLOUR_BLACK, highlight_text_colour=termColours.white)
+        screen.paint(text, dimensions[0] - len(text), dimensions[1] - 1, colour_map=colour_list)
 
 
 class PopupCreator:
-    def __init__(self, popup_dimensions, text_colour, popup_colour):
+    def __init__(self, popup_dimensions:tuple, text_colour, popup_colour):
         self.popup_dimensions = popup_dimensions
         self.text_colour = text_colour
         self.popup_colour  = popup_colour
@@ -95,8 +144,22 @@ class PopupCreator:
         bottom_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1] + self.popup_dimensions[1])
         screen.fill_polygon([[(start_pos), (top_right), (bottom_right), (bottom_left)]], colour=self.popup_colour)
 
-    def add_text(self, text, screen, x, y):
+    def add_text(self, text, screen, y, x=None):
+        if x is None: # if x is not specified, centre it
+            x = int((dimensions[0] - len(text))/2)
+
         screen.print_at(text, x, y, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+
+    def add_coloured_text(self, text, coloured_words:list, screen, y, x=None):
+        if x is None: # if x is not specified, centre it
+            x = int((dimensions[0] - len(text))/2)
+
+        # create colour list to allow for multi-colour string        
+        colour_list = create_colour_list(text, coloured_words, Screen.COLOUR_BLACK, background_color=self.popup_colour, highlight_text_colour=termColours.white)
+        
+        screen.paint(text, x, y, colour_map=colour_list)
+
+        
 
     def add_button(self, screen, button_text, x, y):
         screen.print_at(button_text, x, y, self.text_colour, Screen.A_NORMAL, termColours.white)
@@ -163,6 +226,8 @@ class ColourInputPopup:
         self.input_dimensions = (4, 1)
         self.input_text = ""
 
+        self.showing_colour_input_popup = False
+
         self.popup_creator = PopupCreator(self.popup_dimensions, self.text_colour, self.popup_colour)
 
 
@@ -173,11 +238,11 @@ class ColourInputPopup:
 
         # add text
         text = "Input terminal colour (0-255):"
-        self.popup_creator.add_text(text, screen, x=int((dimensions[0] - len(text))/2), y=int(dimensions[1]/2) - 3)
+        self.popup_creator.add_text(text, screen, y=int(dimensions[1]/2) - 3)
         text2 = "Type numbers 0-9, Del to delete"
-        self.popup_creator.add_text(text2, screen, x=int((dimensions[0] - len(text2))/2), y=int(dimensions[1]/2) - 2)
+        self.popup_creator.add_text(text2, screen, y=int(dimensions[1]/2) - 2)
         text3 = "Press Enter again to confirm"
-        self.popup_creator.add_text(text3, screen, x=int((dimensions[0] - len(text3))/2), y=int(dimensions[1]/2) - 1)
+        self.popup_creator.add_text(text3, screen, y=int(dimensions[1]/2) - 1)
 
         # add input box
         self.popup_creator.show_input_text(screen, termColours.white, self.input_text, self.input_dimensions, x=int((dimensions[0] - self.input_dimensions[0])/2), y=int(dimensions[1]/2) + 1)
@@ -185,6 +250,9 @@ class ColourInputPopup:
         # add button
         button_text = " Colour diagram (click me!) "
         self.popup_creator.add_button(screen, button_text, x=int((dimensions[0] - len(button_text))/2), y=int(dimensions[1]/2) + 3)
+
+        screen.refresh()
+        self.showing_colour_input_popup = True
 
     def handle_inputs(self, event, screen):
         if 48 <= event.key_code <= 57: # keys 0-9
@@ -195,7 +263,7 @@ class ColourInputPopup:
             screen.refresh()
 
     def check_valid_input(self, screen, pen):
-        return self.popup_creator.input_field.check_if_valid(screen, pen, self.popup_creator)
+        self.showing_colour_input_popup = self.popup_creator.input_field.check_if_valid(screen, pen, self.popup_creator)
 
 
 
@@ -220,12 +288,11 @@ def demo(screen):
     mouse_down = None
     mouse_up = None
     global dimensions
-    showing_popup_screen = False
 
     colour_input_popup = ColourInputPopup()
+    help_popup = HelpPopup()
     pen = Pen()
     tool = Tool()
-    help = Help()
 
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
@@ -233,22 +300,19 @@ def demo(screen):
         screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=termColours.sky_blue, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         pen.print_pen_colour(screen)
         tool.print_tool_type(screen)
-        help.print_help_tip_text(screen)
+        help_popup.print_help_tip_text(screen)
         screen.refresh()
         while not screen.has_resized(): # if screen is correct size
 
             event = screen.get_event()
             if isinstance(event, MouseEvent):
-                if not showing_popup_screen:
+                if not colour_input_popup.showing_colour_input_popup and not help_popup.showing_help_popup:
                     if tool.tool_type == "pen": # if using pen tool
                         if event.buttons == 0: # mouse up
                             mouse_up = [event.x, event.y]
                         elif event.buttons == 1: # mouse down
                             mouse_down = [event.x, event.y]
                             mouse_up = None
-
-                        #screen.print_at(mouse_down, 0, 0)
-                        #screen.print_at(mouse_up, 0, 1)
 
                         if mouse_up and mouse_down:
                             mouse_up[1] = min((dimensions[1] - 2), mouse_up[1]) # make sure can't draw off bottom of screen
@@ -272,21 +336,24 @@ def demo(screen):
                             webbrowser.open('https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg') # open colour diagram in browser
 
             elif isinstance(event, KeyboardEvent):
-                if showing_popup_screen:
+                if colour_input_popup.showing_colour_input_popup:
                     if event.key_code == 10: # enter key to open colour input
-                        showing_popup_screen = colour_input_popup.check_valid_input(screen, pen) # check if input is valid
+                        colour_input_popup.check_valid_input(screen, pen) # check if input is valid
                     else:
                         colour_input_popup.handle_inputs(event, screen)
                     screen.refresh()
+                elif help_popup.showing_help_popup:
+                    if event.key_code == 104:
+                        help_popup.hide_popup(screen)
                 else:
                     if event.key_code == 10: # enter key to open colour input
                         colour_input_popup.show_popup(screen)
-                        showing_popup_screen = True
-                        screen.refresh()
                     elif event.key_code == 32: # space key
                         tool.change_tool_type()
                         tool.print_tool_type(screen)
                         screen.refresh()
+                    elif event.key_code == 104:
+                        help_popup.show_popup(screen)
 
 while True:
     Screen.wrapper(demo)
