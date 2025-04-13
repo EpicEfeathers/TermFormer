@@ -4,7 +4,7 @@ from config import termColours
 
 class LevelRenderer:
     def __init__(self):
-        with open("data/level0.json", "r") as file:
+        with open("data/playermade/123.json", "r") as file:
             self.level_data = json.load(file)
             self.background_color = termColours.sky_blue
 
@@ -13,9 +13,11 @@ class LevelRenderer:
 
         # redner tiles
         for h, row_data in enumerate(self.level_data):
+            screen.print_at(f"{len(row_data)}", 0, 0)
             for w, tile in enumerate(row_data):
-                if tile['char'] != " ":
-                    screen.print_at(tile['char'], w, h, tile['colour'])
+                screen.print_at(text=chr(tile[0]), x=w, y=h, colour=tile[1], attr=tile[2], bg=tile[3])
+                #if tile['char'] != " ":
+                    #screen.print_at(tile['char'], w, h, tile['colour'])
 
         # write debug screen
         game_controls.write_debug_screen(screen, player, frame_control, self.background_color)
