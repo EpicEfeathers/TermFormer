@@ -6,3 +6,5 @@ scripts/__pycache__/player.cpython-312.pyc
 scripts/__pycache__/render_level.cpython-312.pyc
 /testing
 /__pycache__
+data/playermade/1234.json
+*.pyc
