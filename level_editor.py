@@ -28,24 +28,31 @@ def demo(screen):
     mouse_up = None
     global dimensions
 
+    # class instances
     colour_input_popup = ColourInputPopup(dimensions)
     help_popup = HelpPopup(dimensions)
     save_popup = SavePopup(dimensions)
     pen = Pen(dimensions)
     tool = Tool(dimensions)
 
+
+    # checking screen dimensions
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
     else:
+        # set up the screen
         screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=termColours.sky_blue, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         pen.print_pen_colour(screen)
         tool.print_tool_type(screen)
         help_popup.print_help_tip_text(screen)
         screen.refresh()
-        while not screen.has_resized(): # if screen is correct size
 
+
+        while not screen.has_resized(): # if screen is correct size
+            # get input events (mouse and keyboard)
             event = screen.get_event()
             if isinstance(event, MouseEvent):
+                # drawing
                 if not colour_input_popup.showing_colour_input_popup and not help_popup.showing_help_popup and not save_popup.showing_save_popup:
                     if tool.tool_type == "pen": # if using pen tool
                         if event.buttons == 0: # mouse up
@@ -78,31 +85,43 @@ def demo(screen):
                     if event.buttons == 1:
                         if event.y == 17 and 67 <= event.x <= 81:
                             save_popup.save_button_clicked(screen)
-
+            
+            # keyboard events
             elif isinstance(event, KeyboardEvent):
+                # if colour input open
                 if colour_input_popup.showing_colour_input_popup:
-                    if event.key_code == 10: # enter key to open colour input
+                    if event.key_code == 10: # enter key
                         colour_input_popup.check_valid_input(screen, pen) # check if input is valid
+                    elif event.key_code == -1: # ESC key
+                        colour_input_popup.hide_popup(screen)
                     else:
                         colour_input_popup.handle_inputs(event, screen)
                     screen.refresh()
+                # if help popup open
                 elif help_popup.showing_help_popup:
-                    if event.key_code == 104: # h key
+                    if event.key_code == 104 or event.key_code == -1: # h key or ESC
                         help_popup.hide_popup(screen)
+                # if save popup up
                 elif save_popup.showing_save_popup:
-                    if event.key_code == 115: # s key
+                    if event.key_code == 115 or event.key_code == -1: # s key or ESC
                         save_popup.hide_popup(screen)
                     else:
                         save_popup.handle_inputs(event, screen)
+
+                # else
                 else:
+                    # show colour input popup
                     if event.key_code == 10: # enter key to open colour input
                         colour_input_popup.show_popup(screen)
+                    # switch to tool type (pen <-> dropper)
                     elif event.key_code == 32: # space key
                         tool.change_tool_type()
                         tool.print_tool_type(screen)
                         screen.refresh()
+                    # show help popup
                     elif event.key_code == 104: # h key
                         help_popup.show_popup(screen)
+                    # show save popup menu
                     elif event.key_code == 115: # s key
                         save_popup.show_popup(screen)
 

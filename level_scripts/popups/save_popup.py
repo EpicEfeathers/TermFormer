@@ -25,7 +25,7 @@ class SavePopup:
 
         self.popup_creator.add_text("Save level as:", screen, y=int(self.dimensions[1]/2) - 2)
 
-        self.popup_creator.show_input_text(screen, termColours.white, self.input_text, self.input_dimensions, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2))
+        self.popup_creator.input_field.show_input_text(screen, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2), background_colour=termColours.white)
 
         button_text = " Click to save "
         self.popup_creator.add_button(screen, button_text, x=int((self.dimensions[0] - len(button_text))/2), y=int(self.dimensions[1]/2) + 2)

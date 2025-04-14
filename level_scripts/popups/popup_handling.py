@@ -69,9 +69,10 @@ class PopupCreator:
     def add_button(self, screen, button_text, x, y):
         screen.print_at(button_text, x, y, self.text_colour, Screen.A_NORMAL, termColours.white)
 
-    def show_input_text(self, screen, background_color, input_text, input_dimensions, x, y):
+    '''def show_input_text(self, screen, background_color, input_text, input_dimensions, x, y):
         input_text = input_text + (" " * (input_dimensions[0] - len(input_text)))
-        screen.print_at(input_text, x, y, self.text_colour, Screen.A_NORMAL, background_color)
+        screen.print_at(input_text, x, y, self.text_colour, Screen.A_NORMAL, background_color)'''
+    
 
 
 
@@ -110,24 +111,3 @@ class InputField:
 
     def return_input_text(self):
         return self.input_text
-
-    def check_if_valid(self, screen, pen, popup_creator):
-        if self.input_text == "": # if user provides no colour, set the colour to the current colour
-            self.input_text = pen.pen_colour
-        if 0 <= int(self.input_text) <= 255:
-            pen.pen_colour = int(self.input_text)
-
-            pen.print_pen_colour(screen)
-
-            # recreate the covered pixels under the popup
-            popup_creator.recreate_under_popup(screen)
-            screen.refresh()
-
-            self.input_text = "" # set the input field to empty for next time
-
-            return False
-        else:
-            self.show_input_text(screen, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2) + 1, background_colour=termColours.red)
-            screen.refresh()
-
-            return True
