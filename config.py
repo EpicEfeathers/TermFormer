@@ -9,6 +9,7 @@ class termColours:
 
 
 class keys: # ascii keys
+    DEL = -300
     up = -204
     down = -206
     ESC = -1

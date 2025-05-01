@@ -41,13 +41,15 @@ class PopupCreator:
                 screen.print_at(chr(self.saved_pixels[i][0]), top_left[0] + w, top_left[1] + h, self.saved_pixels[i][1], self.saved_pixels[i][2], self.saved_pixels[i][3]) # char converts ASCII number (e.g. 32) to it's character (e.g. " ")
                 i += 1
 
-    def create_background(self, screen):
+    def create_background(self, screen, y_offset=0):
         # create rectangle
-        start_pos = (int((self.dimensions[0]-self.popup_dimensions[0])/2), int((self.dimensions[1]-self.popup_dimensions[1])/2))
+        start_pos = (int((self.dimensions[0]-self.popup_dimensions[0])/2), int((self.dimensions[1]-self.popup_dimensions[1])/2 + y_offset))
         top_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1])
         bottom_left = (start_pos[0], start_pos[1] + self.popup_dimensions[1])
         bottom_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1] + self.popup_dimensions[1])
         screen.fill_polygon([[(start_pos), (top_right), (bottom_right), (bottom_left)]], colour=self.popup_colour)
+
+        screen.print_at(f"{start_pos} {top_right} {bottom_left} {bottom_right}", 0, 0)
 
     def add_text(self, text, screen, y, x=None, background_colour=None):
         if background_colour is None: # if background colour not specified, set it to popup colour

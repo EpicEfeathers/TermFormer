@@ -6,7 +6,6 @@ import json
 
 from level_scripts.create_colour_list import create_colour_list
 
-from level_scripts.popups.save_popup import SavePopup
 from level_scripts.popups.colour_input_popup import ColourInputPopup
 from level_scripts.popups.help_popup import HelpPopup
 from level_scripts.popups.background_popup import BackgroundPopup
@@ -36,7 +35,6 @@ def demo(screen):
     # class instances
     colour_input_popup = ColourInputPopup(dimensions)
     help_popup = HelpPopup(dimensions)
-    save_popup = SavePopup(dimensions)
     background_popup = BackgroundPopup(dimensions)
     pen = Pen(dimensions)
     tool = Tool(dimensions)
@@ -66,18 +64,16 @@ def demo(screen):
                 event = screen.get_event()
 
                 if isinstance(event, KeyboardEvent):
-                    if event.key_code == keys.enter:
-                        level_renderer.render_level(dimensions, save_slot_popup.selected_item, screen) # render level
-
-                        save_slot_popup.showing_save_slot_popup = False
-                    elif event.key_code == keys.up or event.key_code == keys.down:
-                        save_slot_popup.handle_arrow_keys(event.key_code, screen)
+                    if event.key_code in [keys.up, keys.down, keys.DEL]:
+                        save_slot_popup.handle_input(event.key_code, screen)
+                    elif event.key_code == keys.enter:
+                        save_slot_popup.handle_input(event.key_code, screen, level_renderer, dimensions)
             else:
                 # get input events (mouse and keyboard)
                 event = screen.get_event()
                 if isinstance(event, MouseEvent):
                     # drawing
-                    if not colour_input_popup.showing_colour_input_popup and not help_popup.showing_help_popup and not save_popup.showing_save_popup and not background_popup.showing_background_colour_popup: # if no popups open
+                    if not colour_input_popup.showing_colour_input_popup and not help_popup.showing_help_popup and not background_popup.showing_background_colour_popup: # if no popups open
                         if tool.tool_type == "pen": # if using pen tool
                             handle_drawing.handle_drawing(dimensions, screen, event, pen.pen_colour, character_to_draw="█", screen_background_colour=background_popup.background_colour)
 
@@ -95,10 +91,6 @@ def demo(screen):
                         if event.buttons == 1:
                             if event.y == 18 and 61 <= event.x <= 89:
                                 webbrowser.open('https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg') # open colour diagram in browser
-                    else:
-                        if event.buttons == 1:
-                            if event.y == 17 and 67 <= event.x <= 81:
-                                save_popup.save_button_clicked(screen)
                 
                 # keyboard events
                 elif isinstance(event, KeyboardEvent):
@@ -115,12 +107,7 @@ def demo(screen):
                     elif help_popup.showing_help_popup:
                         if event.key_code == keys.h or event.key_code == keys.ESC: # h key or ESC
                             help_popup.hide_popup(screen)
-                    # if save popup up
-                    elif save_popup.showing_save_popup:
-                        if event.key_code == keys.s or event.key_code == keys.ESC: # s key or ESC
-                            save_popup.hide_popup(screen)
-                        else:
-                            save_popup.handle_inputs(event, screen)
+                    # if change background colour open
                     elif background_popup.showing_background_colour_popup:
                         if event.key_code == keys.enter: # enter key
                             background_popup.check_valid_input(screen)

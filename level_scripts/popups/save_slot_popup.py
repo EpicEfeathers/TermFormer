@@ -3,6 +3,7 @@ from datetime import datetime
 
 from config import termColours, keys
 from level_scripts.popups.popup_handling import PopupCreator
+from level_scripts.popups.save_deletion_popup import SaveDeletionPopup
 
 class SaveSlotPopup:
     def __init__(self, dimensions):
@@ -17,6 +18,7 @@ class SaveSlotPopup:
         self.showing_save_slot_popup = True
 
         self.popup_creator = PopupCreator(self.dimensions, self.popup_dimensions, self.text_colour, self.popup_colour, self.input_dimensions)
+        self.save_deletion_popup = SaveDeletionPopup(dimensions)
 
         self.selected_item = 1
 
@@ -59,43 +61,63 @@ class SaveSlotPopup:
 
         screen.refresh()
 
-    def handle_arrow_keys(self, key_code, screen): 
+    def handle_input(self, key_code, screen, level_renderer=None, dimensions=None): 
         '''
-        Select which level'''
-        if key_code == keys.up:
-            self.selected_item -= 1
-        else:
-            self.selected_item += 1
+        Handle input
+        (Arrow keys / Level Deletion)
+        '''
+        if key_code == keys.DEL: # delete level
+            self.save_deletion_popup.show_popup(screen)
+        elif key_code == keys.enter:
+            if self.save_deletion_popup.showing_save_deletion_popup:
+                self.save_screen(screen, reset=True) # reset (basically delete data)
 
-        if self.selected_item < 1:
-            self.selected_item = 3
-        elif self.selected_item > 3:
-            self.selected_item = 1
+                self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_names() # reset file names (as they have changed)
+                self.show_popup(screen) # reshow popup to show these changes
 
-        x_pos = int((self.dimensions[0]-self.popup_dimensions[0])/2) + 2 # align 2 px from the left of the popup
-        self.popup_creator.add_text(f"Slot 1 – {self.slot1_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) -2, background_colour=(termColours.white if self.selected_item == 1 else None))
-        self.popup_creator.add_text(f"Slot 2 – {self.slot2_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 0, background_colour=(termColours.white if self.selected_item == 2 else None))
-        self.popup_creator.add_text(f"Slot 3 – {self.slot3_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 2, background_colour=(termColours.white if self.selected_item == 3 else None))
+                self.save_deletion_popup.hide_popup(screen) # hide save deletion popup
+                self.save_deletion_popup.showing_save_deletion_popup = False
+            else:
+                level_renderer.render_level(dimensions, self.selected_item, screen) # render level
+                self.showing_save_slot_popup = False
+        else: # switch highlighted level
+            if key_code == keys.up:
+                self.selected_item -= 1
+            else:
+                self.selected_item += 1
 
-        screen.refresh()
+            if self.selected_item < 1:
+                self.selected_item = 3
+            elif self.selected_item > 3:
+                self.selected_item = 1
 
-    def save_button_clicked(self, screen):
+            x_pos = int((self.dimensions[0]-self.popup_dimensions[0])/2) + 2 # align 2 px from the left of the popup
+            self.popup_creator.add_text(f"Slot 1 – {self.slot1_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) -2, background_colour=(termColours.white if self.selected_item == 1 else None))
+            self.popup_creator.add_text(f"Slot 2 – {self.slot2_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 0, background_colour=(termColours.white if self.selected_item == 2 else None))
+            self.popup_creator.add_text(f"Slot 3 – {self.slot3_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 2, background_colour=(termColours.white if self.selected_item == 3 else None))
+
+            screen.refresh()
+
+    def save_button_clicked(self, screen, reset=False):
         self.input_text = self.popup_creator.input_field.return_input_text()
         self.hide_popup(screen)
         self.save_screen(screen, self.input_text)
 
-    def save_screen(self, screen):
-        now = datetime.now()
+    def save_screen(self, screen, reset=False):
+        if reset: # resetting file, basically deleting all data
+            data = {"edited": "", "background_colour": 75, "tiles": []}
+        else:
+            now = datetime.now()
 
-        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": 75}
-        tiles = []
-        for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
-            row = []
-            for w in range(self.dimensions[0]):
-                row.append(screen.get_from(w, h))
-            tiles.append(row)
+            data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": 75}
+            tiles = []
+            for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
+                row = []
+                for w in range(self.dimensions[0]):
+                    row.append(screen.get_from(w, h))
+                tiles.append(row)
 
-        data["tiles"] = tiles
+            data["tiles"] = tiles
 
         with open(f"data/playermade/level{self.selected_item}.json", "w") as file:
             json.dump(data, file) 
