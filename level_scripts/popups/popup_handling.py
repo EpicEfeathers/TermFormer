@@ -49,11 +49,13 @@ class PopupCreator:
         bottom_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1] + self.popup_dimensions[1])
         screen.fill_polygon([[(start_pos), (top_right), (bottom_right), (bottom_left)]], colour=self.popup_colour)
 
-    def add_text(self, text, screen, y, x=None):
+    def add_text(self, text, screen, y, x=None, background_colour=None):
+        if background_colour is None: # if background colour not specified, set it to popup colour
+            background_colour = self.popup_colour
         if x is None: # if x is not specified, centre it
             x = int((self.dimensions[0] - len(text))/2)
 
-        screen.print_at(text, x, y, self.text_colour, Screen.A_NORMAL, self.popup_colour)
+        screen.print_at(text, x, y, self.text_colour, Screen.A_NORMAL, background_colour)
 
     def add_coloured_text(self, screen, text, text_colour, background_colour, coloured_words:list, y, x=None):
         if x is None: # if x is not specified, centre it
@@ -68,10 +70,6 @@ class PopupCreator:
 
     def add_button(self, screen, button_text, x, y):
         screen.print_at(button_text, x, y, self.text_colour, Screen.A_NORMAL, termColours.white)
-
-    '''def show_input_text(self, screen, background_color, input_text, input_dimensions, x, y):
-        input_text = input_text + (" " * (input_dimensions[0] - len(input_text)))
-        screen.print_at(input_text, x, y, self.text_colour, Screen.A_NORMAL, background_color)'''
     
 
 
@@ -99,7 +97,7 @@ class InputField:
 
     def edit_input_text(self, screen, digit, x, y, maximum_text_length):
         if len(self.input_text) < maximum_text_length:
-            self.input_text += chr(digit)#str(keyboard_event_number_conversion[digit])
+            self.input_text += chr(digit)
             
             self.show_input_text(screen, x, y)
 

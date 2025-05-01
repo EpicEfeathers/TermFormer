@@ -1,6 +1,9 @@
 from asciimatics.screen import Screen
 
 def create_colour_list(text, words_to_change: list, base_text_colour: int, background_color:int, highlight_text_colour: list):
+    '''
+    Creates list which allows for multi-coloured printing
+    '''
     colour_list = [(base_text_colour, Screen.A_NORMAL, background_color)] * len(text)
     for word_index, word in enumerate(words_to_change):
         start = (text.find(word))

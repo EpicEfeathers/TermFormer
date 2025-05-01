@@ -6,3 +6,14 @@ class termColours:
     popup_gray = 7
     black = 0
     red = 160
+
+
+class keys: # ascii keys
+    up = -204
+    down = -206
+    ESC = -1
+    enter = 10
+    space = 32
+    b = 98
+    h = 104
+    s = 115

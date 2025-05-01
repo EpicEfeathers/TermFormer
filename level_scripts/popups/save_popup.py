@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from config import termColours
 from level_scripts.popups.popup_handling import PopupCreator
@@ -53,12 +54,17 @@ class SavePopup:
         self.save_screen(screen, self.input_text)
 
     def save_screen(self, screen, file_name):
-        data = []
+        now = datetime.now()
+
+        data = {"level_name": "Example level name", "Edited": now.strftime("%Y-%m-%d"), "background_colour": 75}
+        tiles = []
         for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
             row = []
             for w in range(self.dimensions[0]):
                 row.append(screen.get_from(w, h))
-            data.append(row)
+            tiles.append(row)
+
+        data["tiles"] = tiles
 
         with open(f"data/playermade/{file_name}.json", "w") as file:
             json.dump(data, file) 
