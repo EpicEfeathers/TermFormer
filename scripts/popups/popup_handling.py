@@ -1,9 +1,10 @@
+# THIS FILE IS DIFFERENT AS METHODS CHANGE BETWEEN THE LEVEL EDITOR AND THE MAIN GAME
+
 from asciimatics.screen import Screen
 
 from create_colour_list import create_colour_list
 from config import termColours
 
-# base function for popup code that can be used across popups
 class PopupCreator:
     def __init__(self, dimensions, popup_dimensions:tuple, text_colour, popup_colour, input_dimensions:tuple=None):
         self.dimensions = dimensions
@@ -14,9 +15,6 @@ class PopupCreator:
         if input_dimensions: # if argument is passed (if we need an input field)
             self.input_field = InputField(dimensions=self.dimensions, input_dimensions=input_dimensions, text_colour=self.text_colour, background_colour=termColours.white)
 
-    #INPUT: screen
-    #RETURN: None
-    #PURPOSE: Saves the pixels under the popup, so they can be recreated later
     def save_under_popup(self, screen):
         '''
         Creates list of tuples (first index ASCII char, second Screen colour)
@@ -30,9 +28,6 @@ class PopupCreator:
                 #row.append(pixel)
                 self.saved_pixels.append(pixel)
 
-    #INPUT: screen
-    #RETURN: None
-    #PURPOSE: Recreates the saved pixels under the popup, effectively erasing it
     def recreate_under_popup(self, screen):
         '''
         Recreates what was hidden by popup
@@ -48,9 +43,6 @@ class PopupCreator:
                 screen.print_at(chr(self.saved_pixels[i][0]), top_left[0] + w, top_left[1] + h, self.saved_pixels[i][1], self.saved_pixels[i][2], self.saved_pixels[i][3]) # char converts ASCII number (e.g. 32) to it's character (e.g. " ")
                 i += 1
 
-    #INPUT: screen, int (optional)
-    #RETURN: None
-    #PURPOSE: Creates the popup background (the grey rectangle)
     def create_background(self, screen, y_offset=0):
         # create rectangle
         start_pos = (int((self.dimensions[0]-self.popup_dimensions[0])/2), int((self.dimensions[1]-self.popup_dimensions[1])/2 + y_offset))
@@ -59,9 +51,6 @@ class PopupCreator:
         bottom_right = (start_pos[0] + self.popup_dimensions[0], start_pos[1] + self.popup_dimensions[1])
         screen.fill_polygon([[(start_pos), (top_right), (bottom_right), (bottom_left)]], colour=self.popup_colour)
 
-    #INPUT: str, screen, int, int (optional), int (optional)
-    #RETURN: None
-    #PURPOSE: Adds text to the rectangle
     def add_text(self, text, screen, y, x=None, background_colour=None):
         if background_colour is None: # if background colour not specified, set it to popup colour
             background_colour = self.popup_colour
@@ -70,9 +59,6 @@ class PopupCreator:
 
         screen.print_at(text, x, y, self.text_colour, Screen.A_NORMAL, background_colour)
 
-    #INPUT: screen, str, int, int, list, int, int (optional)
-    #RETURN: None
-    #PURPOSE: Adds multi-coloured text to the screen, based on which words you want with a different colour
     def add_coloured_text(self, screen, text, text_colour, background_colour, coloured_words:list, y, x=None):
         if x is None: # if x is not specified, centre it
             x = int((self.dimensions[0] - len(text))/2)
@@ -82,9 +68,8 @@ class PopupCreator:
         
         screen.paint(text, x, y, background_colour, colour_map=colour_list)
 
-    #INPUT: screen, str, int, int
-    #RETURN: None
-    #PURPOSE: Adds a button to the screen
+        
+
     def add_button(self, screen, button_text, x, y):
         screen.print_at(button_text, x, y, self.text_colour, Screen.A_NORMAL, termColours.white)
     
@@ -92,7 +77,7 @@ class PopupCreator:
 
 
 
-# class for handling all the input field shenanigans (the placein popups where the user can type)
+
 class InputField:
     def __init__(self, dimensions, input_dimensions, text_colour, background_colour):
         self.dimensions = dimensions
@@ -103,9 +88,6 @@ class InputField:
         self.input_text = ""
         self.input_position = tuple()
 
-    #INPUT: screen, int, int, int (optional)
-    #RETURN: None
-    #PURPOSE: Prints the input text to the screen
     def show_input_text(self, screen, x, y, background_colour=None):
         self.input_position = (x, y)
         if not background_colour: # if not specified, set to predefined
@@ -115,26 +97,17 @@ class InputField:
 
         screen.print_at(input_text, x, y, self.text_colour, Screen.A_NORMAL, background_colour)
 
-    #INPUT: screen, int, int, int, int
-    #RETURN: None
-    #PURPOSE: Adds text to the rectangle
     def edit_input_text(self, screen, digit, x, y, maximum_text_length):
         if len(self.input_text) < maximum_text_length:
             self.input_text += chr(digit)
             
             self.show_input_text(screen, x, y)
 
-    #INPUT: str, screen, int, int (optional), int (optional)
-    #RETURN: None
-    #PURPOSE: Adds text to the rectangle
     def delete_input_text(self, screen, x, y):
         if len(self.input_text) >= 1:
             self.input_text = self.input_text[:-1]
             
             self.show_input_text(screen, x, y)
 
-    #INPUT: None
-    #RETURN: str
-    #PURPOSE: Returns the input text
     def return_input_text(self):
         return self.input_text

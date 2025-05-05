@@ -1,3 +1,7 @@
+#NAME: ***REMOVED***
+#ASSIGNMENT: Capstone
+#PURPOSE: To create a game using our python skills (terminal-based platformer game, basically a proof-of-concept).
+
 from pynput.keyboard import Listener
 from asciimatics.screen import Screen
 import time
@@ -9,46 +13,59 @@ from scripts.render_level import LevelRenderer
 
 RUNNING = True
 
+#INPUT: Screen (the terminal instance), tuple
+#RETURN: None
+#PURPOSE: Checks screen dimensions to see if proper
+def check_dimensions(screen, dimensions):
+    global RUNNING
+    x_pos = 0
+
+    #INPUT: str, asciimatics colour (int)
+    #RETURN: None
+    #PURPOSE: Prints to terminal screen, but handles proper x position automatically
+    def screen_print(text, color=Screen.COLOUR_WHITE):
+        nonlocal x_pos # inherit from above
+        screen.print_at(text, x_pos, 0, color)
+        x_pos += len(str(text))
+
+    screen_print("Please resize the terminal to ")
+    screen_print(f"{dimensions[0]}x{dimensions[1]}", Screen.COLOUR_YELLOW)
+    screen_print(". Your current size is ")
+    screen_print(f"{screen.width}x{screen.height}.", Screen.COLOUR_RED)
+
+    screen.refresh() 
+    while not screen.has_resized() and RUNNING: # if the game has not been resized, don't check
+        pass
+
+#INPUT: screen
+#RETURN: None
+#PURPOSE: Runs the main game
 def game(screen):
     global RUNNING
-    dimensions = (150, 30)
-
-    # check if dimensions are proper
-    def check_dimensions(screen, dimensions):
-        global RUNNING
-        x_pos = 0
-        def screen_print(text, color=Screen.COLOUR_WHITE):
-            nonlocal x_pos # inherit from above
-            screen.print_at(text, x_pos, 0, color)
-            x_pos += len(str(text))
-
-        screen_print("Please resize the terminal to ")
-        screen_print(f"{dimensions[0]}x{dimensions[1]}", Screen.COLOUR_YELLOW)
-        screen_print(". Your current size is ")
-        screen_print(f"{screen.width}x{screen.height}.", Screen.COLOUR_RED)
-
-        #screen.print_at(f"Please resize to 150x30. Your current size is {screen.width}x{screen.height}.", 0, 0)
-        screen.refresh() 
-        while not screen.has_resized() and RUNNING:
-            pass
+    dimensions = (150, 31)
 
 
-    # on key press
+    #INPUT: Enum
+    #RETURN: None
+    #PURPOSE: Called when key is pressed, and passes the value on to the game_controls class
     def on_press(key):
         game_controls.keys.add(key)
 
-    # on key release
+    #INPUT: Enum
+    #RETURN: None
+    #PURPOSE: Called when key is released, and passes the value on to the game_controls class
     def on_release(key):
         try:
             game_controls.keys.remove(key)
-        except KeyError: # if already been removed (say to prevent key being held down indefinitely)
+        except KeyError: # if already been removed
             pass
 
-
-    player = Player(screen.width, screen.height)
-    game_controls = GameControls()
+    # instantiates classes
+    player = Player()
+    game_controls = GameControls(dimensions)
     frame_control = FrameControl()
-    level_renderer = LevelRenderer()
+    level_renderer = LevelRenderer(player)
+
 
     # non-blocking listener for keyboard inputs
     listener = Listener(
@@ -62,24 +79,30 @@ def game(screen):
         check_dimensions(screen, dimensions)
     else:
         while not screen.has_resized() and RUNNING: # if screen is correct size
-            frame_start = time.time() # start time to calculate delta time
+            if game_controls.pause_popup.showing_pause_popup: # if showing pause game popup
+                game_controls.pause_popup.show_popup(screen)
 
-            game_controls.handle_input(screen, player)
+                game_controls.handle_input(screen, player)
+            else:
+                # MAIN GAME LOOP
+                frame_start = time.time() # start time to calculate delta time
 
-            level_renderer.render_level(screen, player, game_controls, frame_control)
+                game_controls.handle_input(screen, player)
 
-            # calculate the time it takes to render this frame
-            frame_control.frame_render_time = time.time() - frame_start
+                level_renderer.render_level(screen, player, game_controls, frame_control)
 
-
-            if ((1/60 - frame_control.frame_render_time) > 0):
-                game_controls.time_slept = 1/60 - frame_control.frame_render_time
-                time.sleep(1/60 - frame_control.frame_render_time)
-            frame_control.total_frames += 1 # for calculating avg FPS
-
-            # calculate this frames delta time (render time + sleep time)
-            frame_control.delta_time = time.time() - frame_start
+                # calculate the time it takes to render this frame
+                frame_control.frame_render_time = time.time() - frame_start
 
 
+                if ((1/60 - frame_control.frame_render_time) > 0):
+                    game_controls.time_slept = 1/60 - frame_control.frame_render_time
+                    time.sleep(1/60 - frame_control.frame_render_time)
+                frame_control.total_frames += 1 # for calculating avg FPS
+
+                # calculate this frames delta time (render time + sleep time)
+                frame_control.delta_time = time.time() - frame_start
+
+# run it
 while RUNNING:
     Screen.wrapper(game)

@@ -4,7 +4,9 @@ from datetime import datetime
 from config import termColours, keys
 from level_scripts.popups.popup_handling import PopupCreator
 from level_scripts.popups.save_deletion_popup import SaveDeletionPopup
+import create_colour_list
 
+# popup that shows, allowing user to choose a save
 class SaveSlotPopup:
     def __init__(self, dimensions):
         self.popup_dimensions = (43, 11)
@@ -18,14 +20,19 @@ class SaveSlotPopup:
         self.showing_save_slot_popup = True
 
         self.popup_creator = PopupCreator(self.dimensions, self.popup_dimensions, self.text_colour, self.popup_colour, self.input_dimensions)
-        self.save_deletion_popup = SaveDeletionPopup(dimensions)
+        self.save_deletion_popup = SaveDeletionPopup(self.dimensions)
 
         self.selected_item = 1
 
-        self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_names()
+        self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_times()
 
-    
-    def get_file_names(self):
+
+        self.currently_saved = True # start off as saved, as when you open, it is saved
+
+    #INPUT: None
+    #RETURN: str, str, str
+    #PURPOSE: Gets the files last edited times from the playermade files.
+    def get_file_times(self):
         with open(f"data/playermade/level1.json", "r") as file:
             level_1_data = json.load(file)
             slot1 = f"Edited: {level_1_data["edited"]}" if level_1_data["edited"] != "" else "Empty"
@@ -40,6 +47,9 @@ class SaveSlotPopup:
 
         return slot1, slot2, slot3
 
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Shows the popup
     def show_popup(self, screen):
 
         # create rectangle
@@ -54,32 +64,34 @@ class SaveSlotPopup:
 
         self.popup_creator.add_text("↑/↓ to move | ⏎ to select | ⌫ to delete", screen, y=int(self.dimensions[1]/2) + 4)
 
-        #self.popup_creator.input_field.show_input_text(screen, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2), background_colour=termColours.white)
-
-        #button_text = " Click to save "
-        #self.popup_creator.add_button(screen, button_text, x=int((self.dimensions[0] - len(button_text))/2), y=int(self.dimensions[1]/2) + 2)
-
         screen.refresh()
 
-    def handle_input(self, key_code, screen, level_renderer=None, dimensions=None): 
+    #INPUT: int, screen, class, dict
+    #RETURN: None
+    #PURPOSE: Handles the users inputs, doing the correct code
+    def handle_input(self, key_code, screen, level_renderer=None, level_data=None): 
         '''
         Handle input
-        (Arrow keys / Level Deletion)
+        (Arrow keys / Level Deletion / Level Selection)
         '''
+        screen.print_at(type(level_data), 0, 0)
+        screen.refresh()
         if key_code == keys.DEL: # delete level
             self.save_deletion_popup.show_popup(screen)
+
         elif key_code == keys.enter:
             if self.save_deletion_popup.showing_save_deletion_popup:
-                self.save_screen(screen, reset=True) # reset (basically delete data)
+                self.delete_level() # reset (basically delete data)
 
-                self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_names() # reset file names (as they have changed)
+                self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_times() # reset file names (as they have changed)
                 self.show_popup(screen) # reshow popup to show these changes
 
                 self.save_deletion_popup.hide_popup(screen) # hide save deletion popup
                 self.save_deletion_popup.showing_save_deletion_popup = False
             else:
-                level_renderer.render_level(dimensions, self.selected_item, screen) # render level
+                level_renderer.render_level(self.dimensions, screen, level_data) # render level
                 self.showing_save_slot_popup = False
+
         else: # switch highlighted level
             if key_code == keys.up:
                 self.selected_item -= 1
@@ -98,26 +110,50 @@ class SaveSlotPopup:
 
             screen.refresh()
 
-    def save_button_clicked(self, screen, reset=False):
-        self.input_text = self.popup_creator.input_field.return_input_text()
-        self.hide_popup(screen)
-        self.save_screen(screen, self.input_text)
-
-    def save_screen(self, screen, reset=False):
-        if reset: # resetting file, basically deleting all data
-            data = {"edited": "", "background_colour": 75, "tiles": []}
-        else:
-            now = datetime.now()
-
-            data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": 75}
-            tiles = []
-            for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
-                row = []
-                for w in range(self.dimensions[0]):
-                    row.append(screen.get_from(w, h))
-                tiles.append(row)
-
-            data["tiles"] = tiles
+    #INPUT: None
+    #RETURN: None
+    #PURPOSE: Delete a level (resets it back to a basic state)
+    def delete_level(self):
+        data = {"edited": "", "background_colour": 75, "spawn_point": [0, 0], "tiles": []}
 
         with open(f"data/playermade/level{self.selected_item}.json", "w") as file:
             json.dump(data, file) 
+
+    #INPUT: screen, int, list
+    #RETURN: None
+    #PURPOSE: Handles saving the screen (and all other necessary data) to the correct file
+    def save_screen(self, screen, bg_colour, spawn_point:list):
+        self.currently_saved = True # show that file is currently properly saved
+        self.show_saved_state(screen)
+
+        now = datetime.now()
+
+        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": 75, "spawn_point": spawn_point}
+        tiles = []
+        for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
+            row = []
+            for w in range(self.dimensions[0]):
+                if screen.get_from(w,h)[0] == 42: # if spawn point (42 == *), ignore it
+                    row.append([32, bg_colour, 0, bg_colour])
+                else:
+                    row.append(screen.get_from(w, h))
+            tiles.append(row)
+
+        data["tiles"] = tiles
+
+        with open(f"data/playermade/level{self.selected_item}.json", "w") as file:
+            json.dump(data, file) 
+
+
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Shows if the screen is saved or not through a little indicator at the bottom of the editor.
+    def show_saved_state(self, screen): # print text at bottom to show if saved or not
+        if self.currently_saved:
+            highlight_text_colour = termColours.save_green
+        else:
+            highlight_text_colour = termColours.red
+        colour_list = create_colour_list.create_colour_list("Saved: ████", ["████"], base_text_colour=termColours.popup_gray, background_color=termColours.black, highlight_text_colour=[highlight_text_colour])
+        screen.paint("Saved: ████", 100, self.dimensions[1] - 1, colour_map=colour_list)
+
+        screen.refresh()

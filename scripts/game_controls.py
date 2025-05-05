@@ -1,18 +1,26 @@
 from pynput.keyboard import Key, KeyCode
 from asciimatics.screen import Screen
 import time
-from config import termColours
 
+from config import termColours
+from scripts.popups.pause_popup import PausePopup
+
+# handles all game controlling type stuff (input, debug screen, etc.), other than rendering
 class GameControls:
-    global RUNNING
-    def __init__(self):
-        self.debug_screen = True
+    def __init__(self, dimensions):
+        self.debug_screen = False
         self.debug_screen_height = 19
 
         self.keys = set()
 
         self.time_slept = 0
 
+
+        self.pause_popup = PausePopup(dimensions)
+
+    #INPUT: screen (asciimatics class), player: class
+    #RETURN: None
+    #PURPOSE: Handles user input
     def handle_input(self, screen, player):
         if KeyCode(char="a") in self.keys: # move horizontally
             player.x_velo = -1
@@ -31,32 +39,36 @@ class GameControls:
 
         # other
         if KeyCode(char="t") in self.keys: # toggle debug screen on / off
-            self.toggle_debug_screen(screen)
+            self.toggle_debug_screen()
             self.keys.remove(KeyCode(char="t"))
-        if Key.esc in self.keys: # stop program
-            global RUNNING
-            RUNNING = False
+        if (Key.esc in self.keys) or (KeyCode(char="q") in self.keys): # pause program
+            #self.pause_popup.show_popup(screen)
+            self.pause_popup.showing_pause_popup = not self.pause_popup.showing_pause_popup # toggle
 
-
-    def toggle_debug_screen(self, screen):
+    #INPUT: None
+    #RETURN: None
+    #PURPOSE: Toggles the debug_screen class variable (whether debug screen showing)
+    def toggle_debug_screen(self):
         self.debug_screen = not self.debug_screen
-        #screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=60, h=self.debug_screen_height)
 
-    def write_debug_screen(self, screen, player, frame_control, background_color):
+    #INPUT: screen (asciimatics class), player: class, frame_control: class, background_colour: int
+    #RETURN: None
+    #PURPOSE: Shows the popup on the screen
+    def write_debug_screen(self, screen, player, frame_control, background_colour: int):
         if self.debug_screen:
             self.current_line_left = 0
             self.current_line_right = 0
 
-            # function for printing debug statements easier
-            def print_debug_line(text, position, colour=termColours.white): # 15 = white
+            #INPUT: text: str, position: str, colour: int
+            #RETURN: None
+            #PURPOSE: Makes printing debug statements easier (remembers the line)
+            def print_debug_line(text:str, position:str, colour:int = termColours.white): # 15 = white
                 if position == "left":
-                    screen.print_at(text, 0, self.current_line_left, colour, Screen.A_NORMAL, background_color)
+                    screen.print_at(text, 0, self.current_line_left, colour, Screen.A_NORMAL, background_colour)
                     self.current_line_left += 1
                 else:
-                    screen.print_at(text, screen.width - len(text), self.current_line_right, colour, Screen.A_NORMAL, background_color)
+                    screen.print_at(text, screen.width - len(text), self.current_line_right, colour, Screen.A_NORMAL, background_colour)
                     self.current_line_right += 1
-
-            #screen.clear_buffer(fg=Screen.COLOUR_WHITE, attr=Screen.A_NORMAL, bg=Screen.COLOUR_BLACK, x=0, y=0, w=40, h=self.debug_screen_height)
 
             print_debug_line(f"FPS: {round(1/frame_control.delta_time)}", "left")
 
@@ -65,10 +77,9 @@ class GameControls:
             print_debug_line(f"Delta Time: {"{:.4f}".format(frame_control.delta_time)}", "left")
             print_debug_line(f"FPS if uncapped: {round(1/frame_control.frame_render_time)}", "left")
 
-            print_debug_line(f"XY: {"{:.3f}".format(round(player.y, 3))} {"{:.3f}".format(round(player.x, 3))}", "left", termColours.light_green) # 154 is light green
+            print_debug_line(f"XY: {"{:.3f}".format(round(player.x, 3))} {"{:.3f}".format(round(player.y, 3))}", "left", termColours.light_green) # 154 is light green
             print_debug_line(f"X velo: {"{:.3f}".format(round(player.x_velo, 3))}", "left", termColours.light_green)
             print_debug_line(f"Y velo: {"{:.3f}".format(round(player.y_velo, 3))}", "left", termColours.light_green)
-            #print_debug_line(f"Running: {RUNNING}", "left", Screen.COLOUR_CYAN)
 
             print_debug_line(f"Tiles: {player.get_tiles_surrounding(screen)}", "right", Screen.COLOUR_BLUE)
             

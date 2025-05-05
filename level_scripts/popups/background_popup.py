@@ -2,6 +2,7 @@ from level_scripts.popups.popup_handling import PopupCreator
 
 from config import termColours
 
+# popup to change background colour
 class BackgroundPopup:
     def __init__(self, dimensions):
         self.background_colour = termColours.sky_blue
@@ -18,7 +19,9 @@ class BackgroundPopup:
 
         self.popup_creator = PopupCreator(self.dimensions, self.popup_dimensions, self.text_colour, self.popup_colour, self.input_dimensions)
 
-
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Shows the popup
     def show_popup(self, screen):
         self.popup_creator.save_under_popup(screen)
         # create rectangle
@@ -42,6 +45,18 @@ class BackgroundPopup:
         screen.refresh()
         self.showing_background_colour_popup = True
 
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Hides the popup
+    def hide_popup(self, screen):
+        self.popup_creator.recreate_under_popup(screen)
+        screen.refresh()
+
+        self.showing_background_colour_popup = False
+
+    #INPUT: Keyboard Event, screen
+    #RETURN: None
+    #PURPOSE: Handles inputs, executing the correct code
     def handle_inputs(self, event, screen):
         if 48 <= event.key_code <= 57: # keys 0-9
             self.popup_creator.input_field.edit_input_text(screen, event.key_code, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2) + 1, maximum_text_length=3)
@@ -50,12 +65,9 @@ class BackgroundPopup:
             self.popup_creator.input_field.delete_input_text(screen, x=int((self.dimensions[0] - self.input_dimensions[0])/2), y=int(self.dimensions[1]/2) + 1)
             screen.refresh()
 
-    def hide_popup(self, screen):
-        self.popup_creator.recreate_under_popup(screen)
-        screen.refresh()
-
-        self.showing_background_colour_popup = False
-
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Checks if the user input in the input bar (to change colour) is valid, and executes the correct code
     def check_valid_input(self, screen):
         self.input_text = self.popup_creator.input_field.return_input_text()
         if self.input_text == "": # if user provides no colour, set the colour to the current colour
@@ -74,7 +86,9 @@ class BackgroundPopup:
             screen.refresh()
 
 
-
+    #INPUT: screen
+    #RETURN: None
+    #PURPOSE: Properly changes the background colour
     def change_bg_colour(self, screen):
         for h in range(self.dimensions[1] - 1): # don't get pixels at bottom of screen
             for w in range(self.dimensions[0]):

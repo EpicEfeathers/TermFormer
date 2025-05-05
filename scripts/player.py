@@ -1,8 +1,9 @@
 from pynput.keyboard import Key, KeyCode
 
+# main player class, does most of the player logic
 class Player:
-    def __init__(self, screen_width, screen_height): # initializing all player variables
-        self.x = 2 #int(screen_width / 2)
+    def __init__(self): # initializing all player variables
+        self.x = 1
         self.y = 1
         self.x_velo = 0
         self.y_velo = 0
@@ -15,6 +16,9 @@ class Player:
         
         self.tile_beneath = None
 
+    #INPUT: screen
+    #RETURN: dict
+    #PURPOSE: Gets the values of the tiles surrounding the player (later used to check if walls, air, etc.)
     def get_tiles_surrounding(self, screen):
         surrounding = {
             "left": screen.get_from(int(self.x - 1), int(self.y)), 
@@ -25,7 +29,9 @@ class Player:
         }
         return surrounding
 
-
+    #INPUT: screen, class, int
+    #RETURN: None
+    #PURPOSE: Changes player position based on different variables
     def update_position(self, screen, game_controls, DELTA_TIME):
         # old position to check if moved
         self.old_x = self.x
@@ -45,10 +51,16 @@ class Player:
             self.y += self.y_velo * DELTA_TIME
 
 
-        if tiles_surrounding["left"][0] == 9608 and (KeyCode(char="a") in game_controls.keys):
+        left_tile = tiles_surrounding.get("left") # returns None if none
+        right_tile = tiles_surrounding.get("right") # returns None if none
+        
+        if left_tile and left_tile[0] == 9608 and (KeyCode(char="a") in game_controls.keys):
             self.x_velo = 0
-        elif tiles_surrounding["right"][0] == 9608 and (KeyCode(char="d") in game_controls.keys):
+        elif right_tile and right_tile[0] == 9608 and (KeyCode(char="d") in game_controls.keys):
             self.x_velo = 0
+        elif (tiles_surrounding["in"] is not None and tiles_surrounding["in"][0] == 9650):
+            self.x = 1
+            self.y = 1
         else:
             # x axis movement
             self.x += self.x_velo * self.movement_speed_x * DELTA_TIME
@@ -67,4 +79,4 @@ class Player:
 
 
         if tiles_surrounding["in"][0] == 9608: # if in block
-            self.y -= 1
+            self.y -= 1 # go up one

@@ -1,3 +1,5 @@
+# useful stuff to make the files more legible
+
 class termColours:
     light_green = 154
     white = 15
@@ -6,6 +8,7 @@ class termColours:
     popup_gray = 7
     black = 0
     red = 160
+    save_green = 118
 
 
 class keys: # ascii keys
@@ -18,3 +21,8 @@ class keys: # ascii keys
     b = 98
     h = 104
     s = 115
+
+    key_1 = 49
+    key_2 = 50
+    key_3 = 51
+    key_4 = 52

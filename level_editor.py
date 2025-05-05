@@ -1,10 +1,14 @@
+#NAME: ***REMOVED***
+#ASSIGNMENT: Captstone
+#PURPOSE: Level editor for my capstone terminal game
+
 from asciimatics.screen import Screen
 from asciimatics.event import MouseEvent, KeyboardEvent
 import webbrowser
 from datetime import datetime
 import json
 
-from level_scripts.create_colour_list import create_colour_list
+from create_colour_list import create_colour_list
 
 from level_scripts.popups.colour_input_popup import ColourInputPopup
 from level_scripts.popups.help_popup import HelpPopup
@@ -14,23 +18,28 @@ from level_scripts.pen import Pen
 from level_scripts.popups.save_slot_popup import SaveSlotPopup
 
 from level_scripts.handle_drawing import HandleDrawing
-from level_scripts.open_file import LevelRenderer
+from level_scripts.level_renderer import LevelRenderer
+
+from level_scripts.spawn_point import SpawnPoint
 
 from config import termColours, keys
 
-dimensions = (150, 31)
+#INPUT: Screen, tuple
+#RETURN: None
+#PURPOSE: Checks screen dimensions to see if proper
+def check_dimensions(screen, dimensions):
+    colour_list = create_colour_list(f"Please resize the terminal to {dimensions[0]}x{dimensions[1]}. Your current size is {screen.width}x{screen.height}.", [f"{dimensions[0]}x{dimensions[1]}", f"{screen.width}x{screen.height}."], Screen.COLOUR_WHITE, Screen.COLOUR_BLACK, [Screen.COLOUR_YELLOW, Screen.COLOUR_RED])
+    screen.paint(f"Please resize the terminal to {dimensions[0]}x{dimensions[1]}. Your current size is {screen.width}x{screen.height}.", 0, 0, colour_map=colour_list)
 
+    screen.refresh() 
+    while not screen.has_resized():
+        pass
 
+#INPUT: Screen (the terminal instance)
+#RETURN: None
+#PURPOSE: Main function to run level editor 
 def demo(screen):
-    def check_dimensions(screen, dimensions):
-        colour_list = create_colour_list(f"Please resize the terminal to {dimensions[0]}x{dimensions[1]}. Your current size is {screen.width}x{screen.height}.", [f"{dimensions[0]}x{dimensions[1]}", f"{screen.width}x{screen.height}."], Screen.COLOUR_WHITE, Screen.COLOUR_BLACK, [Screen.COLOUR_YELLOW, Screen.COLOUR_RED])
-        screen.paint(f"Please resize the terminal to {dimensions[0]}x{dimensions[1]}. Your current size is {screen.width}x{screen.height}.", 0, 0, colour_map=colour_list)
-
-        screen.refresh() 
-        while not screen.has_resized():
-            pass
-
-    global dimensions
+    dimensions = (150, 31)
 
     # class instances
     colour_input_popup = ColourInputPopup(dimensions)
@@ -55,6 +64,7 @@ def demo(screen):
         tool.print_tool_type(screen)
         help_popup.print_help_tip_text(screen)
         save_slot_popup.show_popup(screen)
+        save_slot_popup.show_saved_state(screen)
 
         screen.refresh()
 
@@ -67,10 +77,19 @@ def demo(screen):
                     if event.key_code in [keys.up, keys.down, keys.DEL]:
                         save_slot_popup.handle_input(event.key_code, screen)
                     elif event.key_code == keys.enter:
-                        save_slot_popup.handle_input(event.key_code, screen, level_renderer, dimensions)
+                        with open(f"data/playermade/level{save_slot_popup.selected_item}.json", "r") as file:
+                            data = json.load(file)
+                        save_slot_popup.handle_input(event.key_code, screen, level_renderer, data)
+                        spawn_point = SpawnPoint(data)
             else:
                 # get input events (mouse and keyboard)
                 event = screen.get_event()
+
+                # show if currently saved
+                if event:
+                    save_slot_popup.show_saved_state(screen)
+                    save_slot_popup.currently_saved = False
+
                 if isinstance(event, MouseEvent):
                     # drawing
                     if not colour_input_popup.showing_colour_input_popup and not help_popup.showing_help_popup and not background_popup.showing_background_colour_popup: # if no popups open
@@ -80,12 +99,19 @@ def demo(screen):
                         elif tool.tool_type == "dropper": # if using dropper tool
                             if event.buttons == 1: # mouse down
                                 pixel = screen.get_from(event.x, event.y)
-                                pen.pen_colour = pixel[1] # get colour from pixel
+                                if pixel[0] != 32: # if not a background pixel
+                                    pen.pen_colour = pixel[1] # get colour from pixel
+                                else:
+                                    pen.pen_colour = pixel[3] # get background
+                                    
                                 pen.print_pen_colour(screen)
                                 screen.refresh()
 
                         elif tool.tool_type == "spike": # if adding spikes
                             handle_drawing.handle_drawing(dimensions, screen, event, pen.pen_colour, character_to_draw="▲", underlined=4) # 4 is underlined
+
+                        elif tool.tool_type == "spawn point":
+                            spawn_point.change_spawn_point(screen, event, background_popup.background_colour)
 
                     elif colour_input_popup.showing_colour_input_popup or background_popup.showing_background_colour_popup: # if click on popup button
                         if event.buttons == 1:
@@ -134,7 +160,14 @@ def demo(screen):
                             help_popup.show_popup(screen)
                         # show save popup menu
                         elif event.key_code == keys.s: # s key
-                            save_slot_popup.save_screen(screen)
+                            save_slot_popup.save_screen(screen, background_popup.background_colour, spawn_point.spawn_point)
 
+                        # if hotkeying to change tool type
+                        elif event.key_code in [keys.key_1, keys.key_2, keys.key_3, keys.key_4]:
+                            tool.hotkey_change_tool_type(event.key_code)
+                            tool.print_tool_type(screen)
+                            screen.refresh()
+
+# run it
 while True:
     Screen.wrapper(demo)
