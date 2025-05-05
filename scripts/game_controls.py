@@ -15,7 +15,7 @@ class GameControls:
 
         self.time_slept = 0
 
-
+        self.pause_key_held = False
         self.pause_popup = PausePopup(dimensions)
 
     #INPUT: screen (asciimatics class), player: class
@@ -41,9 +41,11 @@ class GameControls:
         if KeyCode(char="t") in self.keys: # toggle debug screen on / off
             self.toggle_debug_screen()
             self.keys.remove(KeyCode(char="t"))
+
         if (Key.esc in self.keys) or (KeyCode(char="q") in self.keys): # pause program
-            #self.pause_popup.show_popup(screen)
-            self.pause_popup.showing_pause_popup = not self.pause_popup.showing_pause_popup # toggle
+            if not self.pause_key_held:
+                self.pause_popup.showing_pause_popup = not self.pause_popup.showing_pause_popup # toggle
+            self.pause_key_held = True
 
     #INPUT: None
     #RETURN: None

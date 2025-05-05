@@ -147,7 +147,7 @@ def demo(screen):
                         # show colour input popup
                         if event.key_code == keys.enter: # enter key to open colour input
                             colour_input_popup.show_popup(screen)
-                        # switch to tool type (pen <-> dropper)
+                        # switch to tool type (pen -> dropper etc)
                         elif event.key_code == keys.space: # space key
                             tool.change_tool_type()
                             tool.print_tool_type(screen)

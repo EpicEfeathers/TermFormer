@@ -2,7 +2,7 @@
 #ASSIGNMENT: Capstone
 #PURPOSE: To create a game using our python skills (terminal-based platformer game, basically a proof-of-concept).
 
-from pynput.keyboard import Listener
+from pynput.keyboard import Listener, Key, KeyCode
 from asciimatics.screen import Screen
 import time
 
@@ -59,6 +59,11 @@ def game(screen):
             game_controls.keys.remove(key)
         except KeyError: # if already been removed
             pass
+        
+        # to stop cycling through keys repeatedly
+        if key == KeyCode(char="q") or key == Key.esc:
+            game_controls.pause_key_held = False
+
 
     # instantiates classes
     player = Player()
