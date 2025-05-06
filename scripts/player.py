@@ -32,7 +32,7 @@ class Player:
     #INPUT: screen, class, int
     #RETURN: None
     #PURPOSE: Changes player position based on different variables
-    def update_position(self, screen, game_controls, DELTA_TIME):
+    def update_position(self, screen, game_controls, DELTA_TIME, spawn_point):
         # old position to check if moved
         self.old_x = self.x
         self.old_y = self.y
@@ -51,16 +51,22 @@ class Player:
             self.y += self.y_velo * DELTA_TIME
 
 
-        left_tile = tiles_surrounding.get("left") # returns None if none
-        right_tile = tiles_surrounding.get("right") # returns None if none
-        
+        left_tile = tiles_surrounding.get("left") # returns None if position would beoff edge of screen
+        right_tile = tiles_surrounding.get("right") # returns None if position would beoff edge of screen
+        # if block on left
         if left_tile and left_tile[0] == 9608 and (KeyCode(char="a") in game_controls.keys):
             self.x_velo = 0
+        # if block on right
         elif right_tile and right_tile[0] == 9608 and (KeyCode(char="d") in game_controls.keys):
             self.x_velo = 0
+        
+        # if touching spike
         elif (tiles_surrounding["in"] is not None and tiles_surrounding["in"][0] == 9650):
-            self.x = 1
-            self.y = 1
+            self.x, self.y = spawn_point
+            self.x_velo = 0
+            self.y_velo = 0
+            return # don't handle other stuff
+        
         else:
             # x axis movement
             self.x += self.x_velo * self.movement_speed_x * DELTA_TIME

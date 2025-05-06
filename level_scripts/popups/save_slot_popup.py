@@ -74,13 +74,17 @@ class SaveSlotPopup:
         Handle input
         (Arrow keys / Level Deletion / Level Selection)
         '''
-        screen.print_at(type(level_data), 0, 0)
         screen.refresh()
-        if key_code == keys.DEL: # delete level
+        if key_code == keys.DEL: # show deletion popup
             self.save_deletion_popup.show_popup(screen)
 
+        # if trying to close deletion popup
+        elif ((key_code == keys.q) or (key_code == keys.ESC)):# and self.save_deletion_popup.showing_save_deletion_popup:
+            self.save_deletion_popup.hide_popup(screen)
+            #self.showing_save_slot_popup = False
+
         elif key_code == keys.enter:
-            if self.save_deletion_popup.showing_save_deletion_popup:
+            if self.save_deletion_popup.showing_save_deletion_popup: # if showing deletion popup
                 self.delete_level() # reset (basically delete data)
 
                 self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_times() # reset file names (as they have changed)
@@ -93,22 +97,24 @@ class SaveSlotPopup:
                 self.showing_save_slot_popup = False
 
         else: # switch highlighted level
-            if key_code == keys.up:
-                self.selected_item -= 1
-            else:
-                self.selected_item += 1
+            # if not in deletion popup
+            if not self.save_deletion_popup.showing_save_deletion_popup:
+                if key_code == keys.up:
+                    self.selected_item -= 1
+                else:
+                    self.selected_item += 1
 
-            if self.selected_item < 1:
-                self.selected_item = 3
-            elif self.selected_item > 3:
-                self.selected_item = 1
+                if self.selected_item < 1:
+                    self.selected_item = 3
+                elif self.selected_item > 3:
+                    self.selected_item = 1
 
-            x_pos = int((self.dimensions[0]-self.popup_dimensions[0])/2) + 2 # align 2 px from the left of the popup
-            self.popup_creator.add_text(f"Slot 1 – {self.slot1_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) -2, background_colour=(termColours.white if self.selected_item == 1 else None))
-            self.popup_creator.add_text(f"Slot 2 – {self.slot2_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 0, background_colour=(termColours.white if self.selected_item == 2 else None))
-            self.popup_creator.add_text(f"Slot 3 – {self.slot3_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 2, background_colour=(termColours.white if self.selected_item == 3 else None))
+                x_pos = int((self.dimensions[0]-self.popup_dimensions[0])/2) + 2 # align 2 px from the left of the popup
+                self.popup_creator.add_text(f"Slot 1 – {self.slot1_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) -2, background_colour=(termColours.white if self.selected_item == 1 else None))
+                self.popup_creator.add_text(f"Slot 2 – {self.slot2_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 0, background_colour=(termColours.white if self.selected_item == 2 else None))
+                self.popup_creator.add_text(f"Slot 3 – {self.slot3_name}", screen, x=x_pos, y=int(self.dimensions[1]/2) + 2, background_colour=(termColours.white if self.selected_item == 3 else None))
 
-            screen.refresh()
+                screen.refresh()
 
     #INPUT: None
     #RETURN: None
@@ -128,7 +134,7 @@ class SaveSlotPopup:
 
         now = datetime.now()
 
-        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": 75, "spawn_point": spawn_point}
+        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": bg_colour, "spawn_point": spawn_point}
         tiles = []
         for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
             row = []

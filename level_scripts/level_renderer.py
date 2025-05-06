@@ -2,7 +2,7 @@ from asciimatics.screen import Screen
 
 from config import termColours
 
-# i guess i don't really need this class do i?
+# i guess i don't really need this as a class do i?
 class LevelRenderer:
     #INPUT: tuple, screen, dict
     #RETURN: None

@@ -74,11 +74,12 @@ def demo(screen):
                 event = screen.get_event()
 
                 if isinstance(event, KeyboardEvent):
-                    if event.key_code in [keys.up, keys.down, keys.DEL]:
+                    if event.key_code in [keys.up, keys.down, keys.DEL, keys.q, keys.ESC]:
                         save_slot_popup.handle_input(event.key_code, screen)
                     elif event.key_code == keys.enter:
                         with open(f"data/playermade/level{save_slot_popup.selected_item}.json", "r") as file:
                             data = json.load(file)
+                        background_popup.background_colour = data["background_colour"]
                         save_slot_popup.handle_input(event.key_code, screen, level_renderer, data)
                         spawn_point = SpawnPoint(data)
             else:

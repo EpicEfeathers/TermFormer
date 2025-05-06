@@ -5,7 +5,7 @@ from config import termColours
 # popup to change background colour
 class BackgroundPopup:
     def __init__(self, dimensions):
-        self.background_colour = termColours.sky_blue
+        self.background_colour = termColours.sky_blue # base
 
         self.popup_dimensions = (40, 9)
         self.dimensions = dimensions
@@ -96,5 +96,10 @@ class BackgroundPopup:
 
                 if pixel[0] == 32: # if space, which is background
                     screen.print_at(" ", w, h, colour=self.background_colour, bg=self.background_colour) # change pixel to background colour
+                elif pixel[0] == 42: # if *, which is spawn point
+                    screen.print_at("*", w, h, colour=termColours.red, bg=self.background_colour) # change pixel to background colour
+                elif pixel[0] == 9650: # if ▲, which is spike
+                    char, colour, attr, bg_colour = screen.get_from(w, h) # get current colour
+                    screen.print_at("▲", w, h, colour=colour, attr=attr, bg=self.background_colour) # change pixel to background colour
         screen.refresh()
     

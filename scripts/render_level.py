@@ -31,7 +31,7 @@ class LevelRenderer:
         game_controls.write_debug_screen(screen, player, frame_control, self.background_colour)
 
         # update player position
-        player.update_position(screen, game_controls, frame_control.delta_time)
+        player.update_position(screen, game_controls, frame_control.delta_time, self.spawn_point)
 
         # render player
         screen.print_at(f"o", int(player.x), int(player.y), Screen.COLOUR_WHITE, Screen.A_BOLD, self.background_colour)
