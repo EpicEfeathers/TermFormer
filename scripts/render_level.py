@@ -5,8 +5,8 @@ from scripts.write_help import write_help
 
 # render the level around the player
 class LevelRenderer:
-    def __init__(self, player):
-        with open("data/playermade/level1.json", "r") as file:
+    def __init__(self, player, game_controls):
+        with open(game_controls.file_path, "r") as file:
             self.data = json.load(file)
             self.level_data = self.data["tiles"]
             self.background_colour = self.data["background_colour"] #termColours.sky_blue

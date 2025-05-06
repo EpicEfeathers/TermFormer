@@ -11,13 +11,13 @@ from scripts.game_controls import GameControls
 from scripts.frame_control import FrameControl
 from scripts.render_level import LevelRenderer
 
-RUNNING = True
+dimensions = (150, 31)
 
 #INPUT: Screen (the terminal instance), tuple
 #RETURN: None
 #PURPOSE: Checks screen dimensions to see if proper
 def check_dimensions(screen, dimensions):
-    global RUNNING
+    global game_controls
     x_pos = 0
 
     #INPUT: str, asciimatics colour (int)
@@ -34,16 +34,14 @@ def check_dimensions(screen, dimensions):
     screen_print(f"{screen.width}x{screen.height}.", Screen.COLOUR_RED)
 
     screen.refresh() 
-    while not screen.has_resized() and RUNNING: # if the game has not been resized, don't check
+    while not screen.has_resized() and game_controls.running: # if the game has not been resized, don't check
         pass
 
 #INPUT: screen
 #RETURN: None
 #PURPOSE: Runs the main game
 def game(screen):
-    global RUNNING
-    dimensions = (150, 31)
-
+    global dimensions, player, game_controls, frame_control, level_renderer
 
     #INPUT: Enum
     #RETURN: None
@@ -63,13 +61,17 @@ def game(screen):
         # to stop cycling through keys repeatedly
         if key == KeyCode(char="q") or key == Key.esc:
             game_controls.pause_key_held = False
+        elif key == Key.up:
+            game_controls.main_menu.key_up = False
+        elif key == Key.down:
+            game_controls.main_menu.key_down = False
 
 
     # instantiates classes
-    player = Player()
+    '''player = Player()
     game_controls = GameControls(dimensions)
     frame_control = FrameControl()
-    level_renderer = LevelRenderer(player)
+    level_renderer = LevelRenderer(player)'''
 
 
     # non-blocking listener for keyboard inputs
@@ -83,8 +85,21 @@ def game(screen):
     if (screen.width, screen.height) != dimensions: # if screen is the incorrect size
         check_dimensions(screen, dimensions)
     else:
-        while not screen.has_resized() and RUNNING: # if screen is correct size
-            if game_controls.pause_popup.showing_pause_popup: # if showing pause game popup
+        while not screen.has_resized() and game_controls.running: # if screen is correct size
+            #screen.get_event()
+            if game_controls.main_menu.main_menu: # if on main menu
+                event = screen.get_event()
+                game_controls.main_menu.handle_inputs(event)
+                                                      
+                game_controls.main_menu.show_popup(screen)
+                #game_controls.handle_input(screen, player))
+            elif game_controls.main_menu.save_slot_popup.showing_save_slot_popup:
+                event = screen.get_event()
+                game_controls.main_menu.save_slot_popup.handle_inputs(event)
+
+                game_controls.main_menu.save_slot_popup.show_popup(screen)
+            elif game_controls.pause_popup.showing_pause_popup: # if game is paused
+                event = screen.get_event()
                 game_controls.pause_popup.show_popup(screen)
 
                 game_controls.handle_input(screen, player)
@@ -108,6 +123,12 @@ def game(screen):
                 # calculate this frames delta time (render time + sleep time)
                 frame_control.delta_time = time.time() - frame_start
 
+
+player = Player()
+game_controls = GameControls(dimensions)
+frame_control = FrameControl()
+level_renderer = LevelRenderer(player, game_controls)
+
 # run it
-while RUNNING:
+while game_controls.running:
     Screen.wrapper(game)
