@@ -5,14 +5,17 @@ from scripts.write_help import write_help
 
 # render the level around the player
 class LevelRenderer:
-    def __init__(self, player, game_controls):
-        with open(game_controls.file_path, "r") as file:
+    def __init__(self, player):
+        self.player = player
+        self.file_path = "data/levels/level1.json"
+
+    def get_data(self):
+        with open(self.file_path, "r") as file:
             self.data = json.load(file)
             self.level_data = self.data["tiles"]
             self.background_colour = self.data["background_colour"] #termColours.sky_blue
             self.spawn_point = self.data["spawn_point"]
-
-        player.x, player.y = self.spawn_point
+        self.player.x, self.player.y = self.spawn_point
 
     #INPUT: screen, class, class, class
     #RETURN: None

@@ -20,6 +20,7 @@ class keys: # ascii keys
     space = 32
     b = 98
     h = 104
+    q = 113
     s = 115
 
     key_1 = 49

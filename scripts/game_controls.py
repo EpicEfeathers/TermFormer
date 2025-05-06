@@ -8,7 +8,7 @@ from scripts.popups.main_menu_popup import MainMenu
 
 # handles all game controlling type stuff (input, debug screen, etc.), other than rendering
 class GameControls:
-    def __init__(self, dimensions):
+    def __init__(self, dimensions, level_renderer):
         self.debug_screen = False
         self.debug_screen_height = 19
 
@@ -22,8 +22,7 @@ class GameControls:
         self.pause_popup = PausePopup(dimensions)
         
         self.main_menu = MainMenu(dimensions, self)
-
-        self.file_path = "data/levels/level1.json"
+        self.level_renderer = level_renderer
 
     #INPUT: screen (asciimatics class), player: class
     #RETURN: None

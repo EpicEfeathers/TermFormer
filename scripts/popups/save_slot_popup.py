@@ -1,4 +1,3 @@
-from pynput.keyboard import Key
 from asciimatics.event import KeyboardEvent
 import json
 
@@ -7,19 +6,18 @@ from config import termColours, keys
 
 # shows a popup when the game is paused
 class SaveSlotPopup:
-    def __init__(self, dimensions):
+    def __init__(self, dimensions, game_controls):
         self.showing_save_slot_popup = False
 
         self.popup_dimensions = (33, 13)
 
         self.popup_creator = PopupCreator(dimensions, self.popup_dimensions, termColours.black, termColours.popup_gray)
-
-        self.key_up = False
-        self.key_down = False
+        self.game_controls = game_controls
 
         self.selected_index = 1
 
         self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_times()
+
 
     def get_file_times(self):
         with open(f"data/playermade/level1.json", "r") as file:
@@ -51,9 +49,9 @@ class SaveSlotPopup:
 
         screen.refresh()
 
-    #INPUT: screen (asciimatics class), list
+    #INPUT: Event
     #RETURN: None
-    #PURPOSE: Handle inputs on the main menu
+    #PURPOSE: Handle inputs for the slot
     def handle_inputs(self, event):
         if isinstance(event, KeyboardEvent):
             # if up key
@@ -62,11 +60,16 @@ class SaveSlotPopup:
             # if down key
             elif event.key_code == keys.down:
                 self.selected_index += 1
+                
             # if enter key
             elif event.key_code == keys.enter:
                 if (self.selected_index % 3 == 1) and (self.slot1_name != "Empty"):
+                    self.game_controls.level_renderer.file_path = "data/playermade/level1.json"
                     self.showing_save_slot_popup = False
                 elif (self.selected_index % 3 == 2) and (self.slot2_name != "Empty"):
+                    self.game_controls.level_renderer.file_path = "data/playermade/level2.json"
                     self.showing_save_slot_popup = False
                 elif (self.selected_index % 3 == 0) and (self.slot3_name != "Empty"):
+                    self.game_controls.level_renderer.file_path = "data/playermade/level3.json"
                     self.showing_save_slot_popup = False
+                self.game_controls.level_renderer.get_data()

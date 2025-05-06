@@ -67,13 +67,6 @@ def game(screen):
             game_controls.main_menu.key_down = False
 
 
-    # instantiates classes
-    '''player = Player()
-    game_controls = GameControls(dimensions)
-    frame_control = FrameControl()
-    level_renderer = LevelRenderer(player)'''
-
-
     # non-blocking listener for keyboard inputs
     listener = Listener(
         on_press=on_press,
@@ -92,12 +85,16 @@ def game(screen):
                 game_controls.main_menu.handle_inputs(event)
                                                       
                 game_controls.main_menu.show_popup(screen)
-                #game_controls.handle_input(screen, player))
             elif game_controls.main_menu.save_slot_popup.showing_save_slot_popup:
                 event = screen.get_event()
                 game_controls.main_menu.save_slot_popup.handle_inputs(event)
 
                 game_controls.main_menu.save_slot_popup.show_popup(screen)
+            elif game_controls.main_menu.help_popup.showing_help_popup:
+                game_controls.main_menu.help_popup.show_popup(screen)
+                
+                event = screen.get_event()
+                game_controls.main_menu.help_popup.handle_inputs(event, screen)
             elif game_controls.pause_popup.showing_pause_popup: # if game is paused
                 event = screen.get_event()
                 game_controls.pause_popup.show_popup(screen)
@@ -123,11 +120,11 @@ def game(screen):
                 # calculate this frames delta time (render time + sleep time)
                 frame_control.delta_time = time.time() - frame_start
 
-
+# instantiates classes
 player = Player()
-game_controls = GameControls(dimensions)
+level_renderer = LevelRenderer(player)
+game_controls = GameControls(dimensions, level_renderer)
 frame_control = FrameControl()
-level_renderer = LevelRenderer(player, game_controls)
 
 # run it
 while game_controls.running:
