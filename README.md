@@ -12,6 +12,12 @@ A terminal platformer game & level editor built using python and the [asciimatic
 
 Originally built as a capstone project for a computer programming class, this project has turned into an exploration of the possibilities of terminal games, even in popular genres like platformers.
 
+In the main game, the user plays as an "o", trying to make their way to a flag, avoiding spikes and trap along the way. For controls, see [Gameplay Controls](#gameplay)
+
+The `Level Editor` includes 5 different tools (pen, dropper, spike, spawn position, and flag), 256 colours (found [here](https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg)) for both the foreground and the background, save slots, and more!  
+These levels are loadable straight from the editor to the main game, with zero hassle. Just navigate to the `main menu`, select `Play Custom Level`, and choose the correct slot.
+
+
 Saw this cool video the other day which highlights other possibilities: [
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
 
@@ -46,7 +52,7 @@ video
 - Press **Enter** to change pen colour
 - Press **B** to change background colour
 - Press **Space** to shuffle through tools
-- Use keys **1-4** to select specific tools
+- Use keys **1-5** to select specific tools
 - Use **ESC** (or the key used to open the popup) to close menus
 
 ## Ideas
