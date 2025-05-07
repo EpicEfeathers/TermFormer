@@ -84,6 +84,7 @@ class SaveSlotPopup:
             #self.showing_save_slot_popup = False
 
         elif key_code == keys.enter:
+            # delete slot
             if self.save_deletion_popup.showing_save_deletion_popup: # if showing deletion popup
                 self.delete_level() # reset (basically delete data)
 
@@ -92,6 +93,8 @@ class SaveSlotPopup:
 
                 self.save_deletion_popup.hide_popup(screen) # hide save deletion popup
                 self.save_deletion_popup.showing_save_deletion_popup = False
+
+                self.selected_item = 1
             else:
                 level_renderer.render_level(self.dimensions, screen, level_data) # render level
                 self.showing_save_slot_popup = False

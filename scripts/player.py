@@ -42,6 +42,16 @@ class Player:
 
         # check tiles above and beneath to see if valid
         tiles_surrounding = self.get_tiles_surrounding(screen)
+
+
+        # if touching spike
+        if (tiles_surrounding["in"] is not None and tiles_surrounding["in"][0] == 9650):
+            self.x, self.y = spawn_point
+            self.x_velo = 0
+            self.y_velo = 0
+            return # don't handle other stuff
+    
+
         if tiles_surrounding["down"] is not None and tiles_surrounding["down"][0] == 9608 and ((Key.space not in game_controls.keys) and (KeyCode(char="w") not in game_controls.keys)): # if tile underneath is block
             self.y_velo = 0
         elif tiles_surrounding["up"] is not None and tiles_surrounding["up"][0] == 9608 and self.y_velo < 0:
@@ -60,12 +70,6 @@ class Player:
         elif right_tile and right_tile[0] == 9608 and (KeyCode(char="d") in game_controls.keys):
             self.x_velo = 0
         
-        # if touching spike
-        elif (tiles_surrounding["in"] is not None and tiles_surrounding["in"][0] == 9650):
-            self.x, self.y = spawn_point
-            self.x_velo = 0
-            self.y_velo = 0
-            return # don't handle other stuff
         
         else:
             # x axis movement

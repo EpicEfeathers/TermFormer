@@ -59,15 +59,8 @@ def demo(screen):
         check_dimensions(screen, dimensions)
     else:
         # set up the screen
-        screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1] - 1, fg=background_popup.background_colour, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
-        pen.print_pen_colour(screen)
-        tool.print_tool_type(screen)
-        help_popup.print_help_tip_text(screen)
+        screen.clear_buffer(x=0, y=0, w=dimensions[0], h=dimensions[1], fg=background_popup.background_colour, attr=Screen.A_NORMAL, bg=termColours.sky_blue)
         save_slot_popup.show_popup(screen)
-        save_slot_popup.show_saved_state(screen)
-
-        screen.refresh()
-
 
         while not screen.has_resized(): # if screen is correct size
             if save_slot_popup.showing_save_slot_popup:
@@ -77,11 +70,23 @@ def demo(screen):
                     if event.key_code in [keys.up, keys.down, keys.DEL, keys.q, keys.ESC]:
                         save_slot_popup.handle_input(event.key_code, screen)
                     elif event.key_code == keys.enter:
+                        # show help menu at the bottom (if not in save deletion popup)
+                        if not save_slot_popup.save_deletion_popup.showing_save_deletion_popup:
+                            screen.clear_buffer(x=0, y=dimensions[1]-1, w=dimensions[0], h=1, fg=background_popup.background_colour, attr=Screen.A_NORMAL, bg=termColours.black)
+                            pen.print_pen_colour(screen)
+                            tool.print_tool_type(screen)
+                            help_popup.print_help_tip_text(screen)
+                            save_slot_popup.show_saved_state(screen)
+
+                        # open file
                         with open(f"data/playermade/level{save_slot_popup.selected_item}.json", "r") as file:
                             data = json.load(file)
                         background_popup.background_colour = data["background_colour"]
-                        save_slot_popup.handle_input(event.key_code, screen, level_renderer, data)
+                        save_slot_popup.handle_input(event.key_code, screen, level_renderer, data) # handle input
                         spawn_point = SpawnPoint(data)
+                        screen.print_at(save_slot_popup.selected_item, 0, 0)
+                        screen.refresh()
+
             else:
                 # get input events (mouse and keyboard)
                 event = screen.get_event()
