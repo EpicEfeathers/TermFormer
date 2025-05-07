@@ -123,7 +123,7 @@ class SaveSlotPopup:
     #RETURN: None
     #PURPOSE: Delete a level (resets it back to a basic state)
     def delete_level(self):
-        data = {"edited": "", "background_colour": 75, "spawn_point": [0, 0], "tiles": []}
+        data = {"edited": "", "background_colour": 75, "spawn_point": [0, 0], "flag_pos": [0, 0], "tiles": []}
 
         with open(f"data/playermade/level{self.selected_item}.json", "w") as file:
             json.dump(data, file) 
@@ -131,13 +131,13 @@ class SaveSlotPopup:
     #INPUT: screen, int, list
     #RETURN: None
     #PURPOSE: Handles saving the screen (and all other necessary data) to the correct file
-    def save_screen(self, screen, bg_colour, spawn_point:list):
+    def save_screen(self, screen, bg_colour, spawn_point:list, flag_pos: list):
         self.currently_saved = True # show that file is currently properly saved
         self.show_saved_state(screen)
 
         now = datetime.now()
 
-        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": bg_colour, "spawn_point": spawn_point}
+        data = {"edited": now.strftime("%Y-%m-%d"), "background_colour": bg_colour, "flag_pos": flag_pos, "spawn_point": spawn_point}
         tiles = []
         for h in range(self.dimensions[1] - 1): # don't add the bottom tool bar part
             row = []

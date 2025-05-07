@@ -52,6 +52,7 @@ video
 ## Ideas
 - Enemies
 - Abilities (dash?)
+- Bounce pads
 
 ## Notes
 - This project was created using the [asciimatics](https://github.com/peterbrittain/asciimatics) package, but might have been better suited for another package like [blessed](https://github.com/jquast/blessed).
@@ -65,3 +66,5 @@ video
 - There are many learning oppurtinities to make it better
     - Should have rewritten the `popup_creator.add_coloured_text` and `popup_creator.add_text` functions to be more similar in how they are called
     - Should have made the base `popup` class better to avoid repeated code
+- If background is not erasing properly in the level editor, make sure to **DRAG** when using the same colour as the background.
+- Adjusting screen size while playing / editing will reset everything!

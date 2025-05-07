@@ -10,7 +10,7 @@ class Tool:
         self.tool_type = "pen"
         self.tool_index = 0
 
-        self.tools = ["pen","dropper","spike","spawn point"]
+        self.tools = ["pen","dropper","spike","spawn point","flag"]
 
     #INPUT: None
     #RETURN: None
@@ -32,7 +32,8 @@ class Tool:
             keys.key_1: self.tools[0],
             keys.key_2: self.tools[1],
             keys.key_3: self.tools[2],
-            keys.key_4: self.tools[3]
+            keys.key_4: self.tools[3],
+            keys.key_5: self.tools[4]
         }
 
         self.tool_type = tool_types[key]

@@ -21,6 +21,7 @@ from level_scripts.handle_drawing import HandleDrawing
 from level_scripts.level_renderer import LevelRenderer
 
 from level_scripts.spawn_point import SpawnPoint
+from level_scripts.flag import Flag
 
 from config import termColours, keys
 
@@ -84,7 +85,7 @@ def demo(screen):
                         background_popup.background_colour = data["background_colour"]
                         save_slot_popup.handle_input(event.key_code, screen, level_renderer, data) # handle input
                         spawn_point = SpawnPoint(data)
-                        screen.print_at(save_slot_popup.selected_item, 0, 0)
+                        flag = Flag(data)
                         screen.refresh()
 
             else:
@@ -118,6 +119,9 @@ def demo(screen):
 
                         elif tool.tool_type == "spawn point":
                             spawn_point.change_spawn_point(screen, event, background_popup.background_colour)
+
+                        else: # if using flag tool
+                            flag.change_flag_pos(screen, event, background_popup.background_colour)
 
                     elif colour_input_popup.showing_colour_input_popup or background_popup.showing_background_colour_popup: # if click on popup button
                         if event.buttons == 1:
@@ -166,10 +170,10 @@ def demo(screen):
                             help_popup.show_popup(screen)
                         # show save popup menu
                         elif event.key_code == keys.s: # s key
-                            save_slot_popup.save_screen(screen, background_popup.background_colour, spawn_point.spawn_point)
+                            save_slot_popup.save_screen(screen, background_popup.background_colour, spawn_point.spawn_point, flag.flag_pos)
 
                         # if hotkeying to change tool type
-                        elif event.key_code in [keys.key_1, keys.key_2, keys.key_3, keys.key_4]:
+                        elif event.key_code in [keys.key_1, keys.key_2, keys.key_3, keys.key_4, keys.key_5]:
                             tool.hotkey_change_tool_type(event.key_code)
                             tool.print_tool_type(screen)
                             screen.refresh()

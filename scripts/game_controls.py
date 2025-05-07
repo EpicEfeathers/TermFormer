@@ -44,8 +44,6 @@ class GameControls:
                 tile_beneath = player.get_tiles_surrounding(screen)["down"]
                 if (tile_beneath is not None and tile_beneath[0] == 9608 and player.y_velo >= 0): # make sure only can jump when on ground and not already going up
                     player.y_velo = -50 # jump strength
-            elif KeyCode(char="s") in self.keys:
-                player.y = 1
 
             # other
             if KeyCode(char="t") in self.keys: # toggle debug screen on / off

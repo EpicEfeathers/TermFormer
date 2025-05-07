@@ -50,6 +50,11 @@ class Player:
             self.x_velo = 0
             self.y_velo = 0
             return # don't handle other stuff
+        elif (tiles_surrounding["in"] is not None and tiles_surrounding["in"][0] == 9873):
+            screen.clear()
+            game_controls.main_menu.main_menu = True
+            self.x, self.y = -1, -1 # move the character off-screen so it isn't rendered later
+            return # don't handle other stuf
     
 
         if tiles_surrounding["down"] is not None and tiles_surrounding["down"][0] == 9608 and ((Key.space not in game_controls.keys) and (KeyCode(char="w") not in game_controls.keys)): # if tile underneath is block

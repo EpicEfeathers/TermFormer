@@ -27,3 +27,4 @@ class keys: # ascii keys
     key_2 = 50
     key_3 = 51
     key_4 = 52
+    key_5 = 53
