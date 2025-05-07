@@ -20,7 +20,7 @@ Saw this cool video the other day which highlights other possibilities for this 
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
 
 
->ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES)
+>ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES). EXPAND ON TOOL TYPES AND THEIR FUNCTIONALITY
 
 ## Example
 Gameplay:
@@ -56,10 +56,13 @@ video
 - Enemies
 - Abilities (dash?)
 - Bounce pads
+- Secrets / Easter Eggs
+- Add multiple levels to the main game
+- Add shadows??
 
 ## Notes
 > [!WARNING]
-> This project has not been tested on windows!
+> This project has not been tested on windows or linux devices!
 
 - This project was created using the [asciimatics](https://github.com/peterbrittain/asciimatics) package, but might have been better suited for another package like [blessed](https://github.com/jquast/blessed).
     - As asciimatics is better for animations and other projects, blessed, which is lower-level with fewer built-in features, would likely have been better for this project

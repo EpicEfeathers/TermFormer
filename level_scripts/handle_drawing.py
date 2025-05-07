@@ -28,13 +28,13 @@ class HandleDrawing:
                 screen.print_at(character_to_draw, *self.mouse_down_pos, colour=pen_colour, attr=underlined, bg=bg_colour)
 
         if self.mouse_up_pos and self.mouse_down_pos:
-            if character_to_draw == "█": # allow drawing lines as not have to handle background
+            if character_to_draw == "█" or character_to_draw == " ": # allow drawing lines as not have to handle background
                 self.mouse_up_pos[1] = min((dimensions[1] - 2), self.mouse_up_pos[1]) # make sure can't draw off bottom of screen
                 self.mouse_down_pos[1] = min((dimensions[1] - 2), self.mouse_down_pos[1]) # make sure can't draw off bottom of screen
 
                 screen.move(*self.mouse_down_pos) # * unpacks tuple
-                if screen_background_colour == pen_colour:
-                    character_to_draw = " " # if colour same as background, assume user wants to draw background, which is made of spaces
+                #if screen_background_colour == pen_colour:
+                 #   character_to_draw = " " # if colour same as background, assume user wants to draw background, which is made of spaces
                 screen.draw(*self.mouse_up_pos, char=character_to_draw, colour=pen_colour, bg=pen_colour, thin=True) # thin means doesn't alias around line
 
 

@@ -13,3 +13,7 @@ def write_help(screen):
     text = "T to toggle debug screen"
     colour_list = create_colour_list(text, ["T"], termColours.popup_gray, termColours.black, [termColours.white])
     screen.paint(text, int((150-len(text))/2), 30, colour_map=colour_list) # halfway over
+
+    text = "Avoid spikes, get to flag"
+    colour_list = create_colour_list(text, ["flag", "spikes"], termColours.popup_gray, termColours.black, [termColours.white, termColours.white])
+    screen.paint(text, int(150-len(text)), 30, colour_map=colour_list) # halfway over
