@@ -99,6 +99,7 @@ def game(screen):
                 event = screen.get_event()
                 game_controls.pause_popup.show_popup(screen)
 
+                game_controls.pause_popup.handle_inputs(event, screen)
                 game_controls.handle_input(screen, player)
             else:
                 # MAIN GAME LOOP

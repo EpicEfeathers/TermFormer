@@ -19,7 +19,7 @@ class GameControls:
         self.time_slept = 0
 
         self.pause_key_held = False
-        self.pause_popup = PausePopup(dimensions)
+        self.pause_popup = PausePopup(dimensions, self)
         
         self.main_menu = MainMenu(dimensions, self)
         self.level_renderer = level_renderer
@@ -28,32 +28,32 @@ class GameControls:
     #RETURN: None
     #PURPOSE: Handles user input
     def handle_input(self, screen, player):
-        if self.main_menu.main_menu: # if showing main menu, let that class handle user input
+        '''if self.main_menu.main_menu: # if showing main menu, let that class handle user input
             self.main_menu.handle_inputs(screen, self.keys)
         
-        else:
-            if KeyCode(char="a") in self.keys: # move horizontally
-                player.x_velo = -1
+        else:'''
+        if KeyCode(char="a") in self.keys: # move horizontally
+            player.x_velo = -1
 
-            if KeyCode(char="d") in self.keys:
-                player.x_velo = 1
-            
-            if KeyCode(char="a") not in self.keys and KeyCode(char="d") not in self.keys: # if neither pressed
-                player.x_velo = 0
-            if (Key.space in self.keys) or (KeyCode(char="w") in self.keys): # jump
-                tile_beneath = player.get_tiles_surrounding(screen)["down"]
-                if (tile_beneath is not None and tile_beneath[0] == 9608 and player.y_velo >= 0): # make sure only can jump when on ground and not already going up
-                    player.y_velo = -50 # jump strength
+        if KeyCode(char="d") in self.keys:
+            player.x_velo = 1
+        
+        if KeyCode(char="a") not in self.keys and KeyCode(char="d") not in self.keys: # if neither pressed
+            player.x_velo = 0
+        if (Key.space in self.keys) or (KeyCode(char="w") in self.keys): # jump
+            tile_beneath = player.get_tiles_surrounding(screen)["down"]
+            if (tile_beneath is not None and tile_beneath[0] == 9608 and player.y_velo >= 0): # make sure only can jump when on ground and not already going up
+                player.y_velo = -50 # jump strength
 
-            # other
-            if KeyCode(char="t") in self.keys: # toggle debug screen on / off
-                self.toggle_debug_screen()
-                self.keys.remove(KeyCode(char="t"))
+        # other
+        if KeyCode(char="t") in self.keys: # toggle debug screen on / off
+            self.toggle_debug_screen()
+            self.keys.remove(KeyCode(char="t"))
 
-            if (Key.esc in self.keys) or (KeyCode(char="q") in self.keys): # pause program
-                if not self.pause_key_held:
-                    self.pause_popup.showing_pause_popup = not self.pause_popup.showing_pause_popup # toggle
-                self.pause_key_held = True
+        if (Key.esc in self.keys) or (KeyCode(char="q") in self.keys): # pause program
+            if not self.pause_key_held:
+                self.pause_popup.showing_pause_popup = not self.pause_popup.showing_pause_popup # toggle
+            self.pause_key_held = True
 
     #INPUT: None
     #RETURN: None

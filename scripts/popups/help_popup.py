@@ -1,4 +1,3 @@
-from pynput.keyboard import Key, KeyCode
 from asciimatics.event import KeyboardEvent
 import json
 
