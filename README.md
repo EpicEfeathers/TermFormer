@@ -15,6 +15,9 @@ Originally built as a capstone project for a computer programming class, this pr
 Saw this cool video the other day which highlights other possibilities: [
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
 
+
+ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES)
+
 ## Example
 Gameplay:
 video
@@ -23,6 +26,21 @@ Level Editor:
 video
 
 ## Usage
+
+### Gameplay:
+- Use **WASD** and **Space** to move
+- Press **Q** or **ESC** to pause
+- Use **Arrow Keys (↑/↓)** and **Enter** to navigate menus
+
+
+### Level Editor
+- Press **H** to see the help menu
+- **Click** or **Drag** to draw
+- Press **S** to save (save indicator appears at the bottom of the editor)
+- Press **Enter** to change pen colour
+- Press **B** to change background colour
+- Press **Space** to shuffle through tools
+- Use keys **1-4** to select specific tools
 
 
 
