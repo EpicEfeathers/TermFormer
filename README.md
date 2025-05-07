@@ -1,7 +1,7 @@
 # TermFormer: A Terminal Platformer
 [![wakatime](https://wakatime.com/badge/user/bf51f838-e5c2-44d9-90ed-ec0da6b90b26/project/9784436c-bbbd-4409-bc19-b488c8e32a30.svg)](https://wakatime.com/badge/user/bf51f838-e5c2-44d9-90ed-ec0da6b90b26/project/9784436c-bbbd-4409-bc19-b488c8e32a30)
-![language](https://img.shields.io/badge/Language-python-yellow)
-![Creator](https://img.shields.io/badge/Creator-EpicEfeathers-0051FF?logo=github)
+[![language](https://img.shields.io/badge/Language-python-yellow)](https://www.python.org)
+[![creator](https://img.shields.io/badge/Creator-EpicEfeathers-0051FF?logo=github)](https://github.com/EpicEfeathers)
 
 
 
@@ -16,7 +16,8 @@ Saw this cool video the other day which highlights other possibilities: [
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
 
 
-ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES)
+>ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES)
+<a href="https://example.com" target="_blank">Click me</a>
 
 ## Example
 Gameplay:
@@ -25,7 +26,12 @@ video
 Level Editor:
 video
 
-## Usage
+## Necessary Libraries
+- [asciimatics](https://github.com/peterbrittain/asciimatics)
+- [pynput](https://github.com/moses-palmer/pynput)
+- [webbrowser](https://github.com/python/cpython/blob/main/Lib/webbrowser.py)
+
+## Controls
 
 ### Gameplay:
 - Use **WASD** and **Space** to move
@@ -41,12 +47,15 @@ video
 - Press **B** to change background colour
 - Press **Space** to shuffle through tools
 - Use keys **1-4** to select specific tools
+- Use **ESC** (or the key used to open the popup) to close menus
 
-
+## Ideas
+- Enemies
+- Abilities (dash?)
 
 ## Notes
 - This project was created using the [asciimatics](https://github.com/peterbrittain/asciimatics) package, but might have been better suited for another package like [blessed](https://github.com/jquast/blessed).
-    - As asciimatics is better for animations and other projects, blessed, which is lower-level, with less built-in features, would likely have been better for this project
+    - As asciimatics is better for animations and other projects, blessed, which is lower-level with fewer built-in features, would likely have been better for this project
 - Using the `ESC` key will often have a delayed response, as terminals wait briefly to check if it is part of an [escape sequence](https://en.wikipedia.org/wiki/Escape_sequence#:~:text=In%20computer%20science%2C%20an%20escape,(and%20possibly%20terminating)%20characters.).
 - Chart of all valid terminal colours: [color chart](https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg)
 - the JSON file could definitely be optimized
