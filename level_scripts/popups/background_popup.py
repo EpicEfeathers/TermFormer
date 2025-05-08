@@ -101,5 +101,8 @@ class BackgroundPopup:
                 elif pixel[0] == 9650: # if ▲, which is spike
                     char, colour, attr, bg_colour = screen.get_from(w, h) # get current colour
                     screen.print_at("▲", w, h, colour=colour, attr=attr, bg=self.background_colour) # change pixel to background colour
+                elif pixel[0] == 9873: # if ⚑, which is flag
+                    char, colour, attr, bg_colour = screen.get_from(w, h) # get current colour
+                    screen.print_at("⚑", w, h, colour=colour, attr=attr, bg=self.background_colour) # change pixel to background colour
         screen.refresh()
     
