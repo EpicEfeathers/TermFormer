@@ -16,12 +16,7 @@ In the main game, the user controls an `o`, trying to make their way to a flag, 
 The `Level Editor` includes 5 different tools (pen, dropper, spike, spawn position, and flag), 256 colours (found [here](https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg)) for both the foreground and the background, save slots, and more! For help with controls, see [Level Editor Controls](#level-editor).  
 These levels are loadable straight from the editor to the main game, with zero hassle. Just navigate to the `main menu`, select `Play Custom Level`, and choose the correct slot.
 
-### Tool Types
-- **Pen**: draws blocks on the screen. Uses pen colour (`enter` to change). If colour is the same as the background, it will `erase` blocks.
-- **Dropper**: selects colour from anywhere on the screen.
-- **Spike**: draws spikes on the screen. Uses pen colour (`enter` to change).
-- **Spawn position**: changes the character's spawn position.
-- **Flag**: changes the flag's position.
+
 
 Saw this cool video the other day which highlights other possibilities for this type of project: [
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
@@ -75,11 +70,10 @@ video
     - As asciimatics is better for animations and other projects, blessed, which is lower-level with fewer built-in features, would likely have been better for this project
 - Using the `ESC` key will often have a delayed response, as terminals wait briefly to check if it is part of an [escape sequence](https://en.wikipedia.org/wiki/Escape_sequence#:~:text=In%20computer%20science%2C%20an%20escape,(and%20possibly%20terminating)%20characters.).
 - Chart of all valid terminal colours: [color chart](https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg)
-- the JSON file could definitely be optimized
-    - Could compress the file size
+- Level data in the JSON files could be optimized to reduce size and increase performance.
 - Testing had not been done on Windows or Linux systems
 - It is likely buggy, as I am the only one testing this
-- There are many learning oppurtinities to make it better
+- There are many learning opportunities to make it better
     - Should have rewritten the `popup_creator.add_coloured_text` and `popup_creator.add_text` functions to be more similar in how they are called
     - Should have made the base `popup` class better to avoid repeated code
     - Could have cleaned up the main game and level editor files
