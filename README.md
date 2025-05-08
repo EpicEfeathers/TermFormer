@@ -60,6 +60,7 @@ video
 - Secrets / Easter Eggs
 - Add multiple levels to the main game
 - Add shadows??
+- Add settings (to toggle music on/off, change controls)
 
 ## Notes
 > [!WARNING]

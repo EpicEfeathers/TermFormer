@@ -5,6 +5,7 @@
 from pynput.keyboard import Listener, Key, KeyCode
 from asciimatics.screen import Screen
 import time
+import pygame # for music
 
 from scripts.player import Player
 from scripts.game_controls import GameControls
@@ -126,6 +127,12 @@ player = Player()
 level_renderer = LevelRenderer(player)
 game_controls = GameControls(dimensions, level_renderer)
 frame_control = FrameControl()
+
+pygame.mixer.init()
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.load("audio/music/menu.mp3")
+pygame.mixer.music.play(-1)  # Loop forever
+
 
 # run it
 while game_controls.running:

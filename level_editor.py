@@ -5,8 +5,8 @@
 from asciimatics.screen import Screen
 from asciimatics.event import MouseEvent, KeyboardEvent
 import webbrowser
-from datetime import datetime
 import json
+import pygame # for music
 
 from create_colour_list import create_colour_list
 
@@ -177,6 +177,11 @@ def demo(screen):
                             tool.hotkey_change_tool_type(event.key_code)
                             tool.print_tool_type(screen)
                             screen.refresh()
+
+pygame.mixer.init()
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.load("audio/music/level_editor.mp3")
+pygame.mixer.music.play(-1)  # Loop forever
 
 # run it
 while True:
