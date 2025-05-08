@@ -71,6 +71,8 @@ video
 - Add multiple levels to the main game
 - Add shadows??
 - Add settings (to toggle music on/off, change controls)
+- Add my own music?
+- Add a better way to close the game than ctrl + c
 
 ## Notes
 > [!WARNING]
