@@ -128,7 +128,7 @@ class SaveSlotPopup:
         with open(f"data/playermade/level{self.selected_item}.json", "w") as file:
             json.dump(data, file) 
 
-    #INPUT: screen, int, list
+    #INPUT: screen, int, list, list
     #RETURN: None
     #PURPOSE: Handles saving the screen (and all other necessary data) to the correct file
     def save_screen(self, screen, bg_colour, spawn_point:list, flag_pos: list):

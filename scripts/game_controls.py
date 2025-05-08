@@ -24,7 +24,7 @@ class GameControls:
         self.main_menu = MainMenu(dimensions, self)
         self.level_renderer = level_renderer
 
-    #INPUT: screen (asciimatics class), player: class
+    #INPUT: screen (asciimatics class), class
     #RETURN: None
     #PURPOSE: Handles user input
     def handle_input(self, screen, player):
@@ -61,7 +61,7 @@ class GameControls:
     def toggle_debug_screen(self):
         self.debug_screen = not self.debug_screen
 
-    #INPUT: screen (asciimatics class), player: class, frame_control: class, background_colour: int
+    #INPUT: screen (asciimatics class), class, class, int
     #RETURN: None
     #PURPOSE: Shows the popup on the screen
     def write_debug_screen(self, screen, player, frame_control, background_colour: int):
@@ -72,7 +72,7 @@ class GameControls:
             #INPUT: text: str, position: str, colour: int
             #RETURN: None
             #PURPOSE: Makes printing debug statements easier (remembers the line)
-            def print_debug_line(text:str, position:str, colour:int = termColours.white): # 15 = white
+            def print_debug_line(text:str, position:str, colour:int = termColours.white):
                 if position == "left":
                     screen.print_at(text, 0, self.current_line_left, colour, Screen.A_NORMAL, background_colour)
                     self.current_line_left += 1

@@ -9,12 +9,15 @@ class LevelRenderer:
         self.player = player
         self.file_path = "data/levels/level1.json"
 
+    #INPUT: None
+    #RETURN: None
+    #PURPOSE: Loads data from a specific file
     def get_data(self):
         with open(self.file_path, "r") as file:
             self.data = json.load(file)
-            self.level_data = self.data["tiles"]
-            self.background_colour = self.data["background_colour"] #termColours.sky_blue
-            self.spawn_point = self.data["spawn_point"]
+        self.level_data = self.data["tiles"]
+        self.background_colour = self.data["background_colour"] #termColours.sky_blue
+        self.spawn_point = self.data["spawn_point"]
         self.player.x, self.player.y = self.spawn_point
 
     #INPUT: screen, class, class, class

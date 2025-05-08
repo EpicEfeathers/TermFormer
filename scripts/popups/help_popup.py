@@ -35,7 +35,7 @@ class HelpPopup:
 
 
 
-    #INPUT: Event
+    #INPUT: Event, screen
     #RETURN: None
     #PURPOSE: Handle inputs for the help menu
     def handle_inputs(self, event, screen):

@@ -29,7 +29,7 @@ class Player:
         }
         return surrounding
 
-    #INPUT: screen, class, int
+    #INPUT: screen, class, int, list
     #RETURN: None
     #PURPOSE: Changes player position based on different variables
     def update_position(self, screen, game_controls, DELTA_TIME, spawn_point):

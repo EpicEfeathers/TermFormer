@@ -32,7 +32,7 @@ class PausePopup:
 
         screen.refresh()
 
-    #INPUT: Event
+    #INPUT: Event, screen
     #RETURN: None
     #PURPOSE: Handle inputs for the slot
     def handle_inputs(self, event, screen):

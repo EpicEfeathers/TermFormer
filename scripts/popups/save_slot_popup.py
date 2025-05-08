@@ -18,7 +18,9 @@ class SaveSlotPopup:
 
         self.slot1_name, self.slot2_name, self.slot3_name = self.get_file_times()
 
-
+    #INPUT: None
+    #RETURN: None
+    #PURPOSE: Opens files and gets their most recent edit times
     def get_file_times(self):
         with open(f"data/playermade/level1.json", "r") as file:
             level_1_data = json.load(file)

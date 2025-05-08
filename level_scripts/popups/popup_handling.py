@@ -117,16 +117,16 @@ class InputField:
 
     #INPUT: screen, int, int, int, int
     #RETURN: None
-    #PURPOSE: Adds text to the rectangle
+    #PURPOSE: Edits the input text
     def edit_input_text(self, screen, digit, x, y, maximum_text_length):
         if len(self.input_text) < maximum_text_length:
             self.input_text += chr(digit)
             
             self.show_input_text(screen, x, y)
 
-    #INPUT: str, screen, int, int (optional), int (optional)
+    #INPUT: screen, int, int
     #RETURN: None
-    #PURPOSE: Adds text to the rectangle
+    #PURPOSE: Deletes the last character of the input field.
     def delete_input_text(self, screen, x, y):
         if len(self.input_text) >= 1:
             self.input_text = self.input_text[:-1]
