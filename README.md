@@ -52,6 +52,16 @@ video
 - Use keys **1-5** to select specific tools
 - Use **ESC** (or the key used to open the popup) to close menus
 
+## Tool Types
+| Tool | Description|
+|------|------------|
+|**Pen** | Draws blocks on the screen. Uses pen colour (`enter` to change). If colour is the same as the background, it will `erase` blocks.
+|**Dropper** | Selects colour from anywhere on the screen.
+|**Spike** | Draws spikes on the screen. Uses pen colour (`enter` to change).
+|**Spawn position** | Changes the character's spawn position.
+|**Flag** | Changes the flag's position.
+
+
 ## Ideas
 - Enemies
 - Add abilities
