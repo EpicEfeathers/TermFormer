@@ -11,16 +11,20 @@ A terminal platformer game & level editor built using python and the [asciimatic
 
 Originally built as a capstone project for a computer programming class, this project has turned into an exploration of the possibilities of terminal games, even in popular genres like platformers.
 
-In the main game, the user plays as an "o", trying to make their way to a flag, avoiding spikes and traps along the way. For controls, see [Gameplay Controls](#gameplay)
+In the main game, the user controls an `o`, trying to make their way to a flag, avoiding spikes and traps along the way. For controls, see [Gameplay Controls](#gameplay).
 
 The `Level Editor` includes 5 different tools (pen, dropper, spike, spawn position, and flag), 256 colours (found [here](https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg)) for both the foreground and the background, save slots, and more! For help with controls, see [Level Editor Controls](#level-editor).  
 These levels are loadable straight from the editor to the main game, with zero hassle. Just navigate to the `main menu`, select `Play Custom Level`, and choose the correct slot.
 
+### Tool Types
+- **Pen**: draws blocks on the screen. Uses pen colour (`enter` to change). If colour is the same as the background, it will `erase` blocks.
+- **Dropper**: selects colour from anywhere on the screen.
+- **Spike**: draws spikes on the screen. Uses pen colour (`enter` to change).
+- **Spawn position**: changes the character's spawn position.
+- **Flag**: changes the flag's position.
+
 Saw this cool video the other day which highlights other possibilities for this type of project: [
 Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
-
-
->ABOUT THE GAME AND LEVEL EDITOR (SUCH AS TOOL TYPES). EXPAND ON TOOL TYPES AND THEIR FUNCTIONALITY
 
 ## Example
 Gameplay:
@@ -31,6 +35,7 @@ video
 
 ## Necessary Libraries
 - [asciimatics](https://github.com/peterbrittain/asciimatics)
+- [pygame](https://github.com/pygame-community/pygame-ce)
 - [pynput](https://github.com/moses-palmer/pynput)
 - [webbrowser](https://github.com/python/cpython/blob/main/Lib/webbrowser.py)
 
@@ -78,5 +83,4 @@ video
     - Should have rewritten the `popup_creator.add_coloured_text` and `popup_creator.add_text` functions to be more similar in how they are called
     - Should have made the base `popup` class better to avoid repeated code
     - Could have cleaned up the main game and level editor files
-- If background is not erasing properly in the level editor, make sure to **DRAG** when using the same colour as the background.
 - Adjusting screen size while playing / editing will reset everything!
