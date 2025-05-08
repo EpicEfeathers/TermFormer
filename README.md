@@ -2,7 +2,7 @@
 [![wakatime](https://wakatime.com/badge/user/bf51f838-e5c2-44d9-90ed-ec0da6b90b26/project/9784436c-bbbd-4409-bc19-b488c8e32a30.svg)](https://wakatime.com/badge/user/bf51f838-e5c2-44d9-90ed-ec0da6b90b26/project/9784436c-bbbd-4409-bc19-b488c8e32a30)
 [![language](https://img.shields.io/badge/Language-python-yellow)](https://www.python.org)
 [![creator](https://img.shields.io/badge/Creator-EpicEfeathers-0051FF?logo=github)](https://github.com/EpicEfeathers)
-
+![creator](https://img.shields.io/badge/>1800_lines_of_code-048100)
 
 
 A terminal platformer game & level editor built using python and the [asciimatics](https://github.com/peterbrittain/asciimatics) library (mainly as a proof of concept).
