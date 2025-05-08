@@ -23,7 +23,7 @@ class HelpPopup:
 
         x_pos = int((150-self.popup_dimensions[0])/2) + 2 # align 2 px from the left of the popup
         self.popup_creator.add_text("Help", screen, y=15 - 5)
-        self.popup_creator.add_text("• Get to the door to escape the level", screen, x=x_pos, y=15 - 3)
+        self.popup_creator.add_text("• Get to the flag to escape the level", screen, x=x_pos, y=15 - 3)
         self.popup_creator.add_text("• Avoid spikes", screen, x=x_pos, y=15 - 1)
 
         self.popup_creator.add_text("Controls", screen, y=15 + 1)
