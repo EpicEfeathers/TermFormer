@@ -23,10 +23,21 @@ Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6y
 
 ## Example
 Gameplay:
-video
+
+https://github.com/user-attachments/assets/22cac171-a443-4a95-a1c4-de66c8c6d1cc
+
+
 
 Level Editor:
-video
+
+https://github.com/user-attachments/assets/b91fc4c5-83bd-4a2c-9ef4-fe383853237b
+
+Loading Level:
+
+https://github.com/user-attachments/assets/05b68b24-f76f-4785-9aa8-752b1e8e9788
+
+
+
 
 ## Necessary Libraries
 - [asciimatics](https://github.com/peterbrittain/asciimatics)

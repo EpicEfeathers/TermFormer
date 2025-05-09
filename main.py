@@ -1,4 +1,4 @@
-#NAME: ***REMOVED***
+#NAME: EpicEfeathers
 #ASSIGNMENT: Capstone
 #PURPOSE: To create a game using our python skills (terminal-based platformer game, basically a proof-of-concept).
 

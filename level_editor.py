@@ -1,4 +1,4 @@
-#NAME: ***REMOVED***
+#NAME: EpicEfeathers
 #ASSIGNMENT: Captstone
 #PURPOSE: Level editor for my capstone terminal game
 
