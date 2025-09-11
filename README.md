@@ -28,11 +28,11 @@ Gameplay:
 
 Level Editor:
 
-[Watch level editor]("media/level editor.mp4")
+[Watch level editor](media/level editor.mp4)
 
 Loading Level:
 
-[Watch custom level]("media/custom level.mp4")
+[Watch custom level](media/custom level.mp4)
 
 
 
