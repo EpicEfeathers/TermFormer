@@ -24,26 +24,15 @@ Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6y
 ## Example
 Gameplay:
 
-<video width="600" controls>
-  <source src="media/gameplay.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-
+[Watch gameplay]("media/gameplay.mp4")
 
 Level Editor:
 
-<video width="600" controls>
-  <source src="media/level editor" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Watch level editor]("media/level editor.mp4")
 
 Loading Level:
 
-<video width="600" controls>
-  <source src="media/custom level" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Watch custom level]("media/custom level.mp4")
 
 
 
