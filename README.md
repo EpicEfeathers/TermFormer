@@ -24,17 +24,26 @@ Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6y
 ## Example
 Gameplay:
 
-https://github.com/user-attachments/assets/22cac171-a443-4a95-a1c4-de66c8c6d1cc
+<video width="600" controls>
+  <source src="media/gameplay.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 
 
 Level Editor:
 
-https://github.com/user-attachments/assets/b91fc4c5-83bd-4a2c-9ef4-fe383853237b
+<video width="600" controls>
+  <source src="media/level editor" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 Loading Level:
 
-https://github.com/user-attachments/assets/05b68b24-f76f-4785-9aa8-752b1e8e9788
+<video width="600" controls>
+  <source src="media/custom level" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 
 
