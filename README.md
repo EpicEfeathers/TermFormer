@@ -18,13 +18,13 @@ These levels are loadable straight from the editor to the main game, with zero h
 
 
 
-Saw this cool video the other day which highlights other possibilities for this type of project: [
-Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
+Saw this cool video the other day which highlights other possibilities for this type of project: [Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6yPJQ)
 
 ## Example
 Gameplay:
 
 [Watch gameplay]("media/gameplay.mp4")
+
 https://github.com/user-attachments/assets/13b3b56a-8397-4fd5-acca-6d061541b384
 
 
