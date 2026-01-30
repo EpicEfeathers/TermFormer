@@ -25,6 +25,7 @@ Minecraft, but it runs in the terminal](https://www.youtube.com/watch?v=6zfXM-6y
 Gameplay:
 
 [Watch gameplay]("media/gameplay.mp4")
+<video src="media/custom_level.mp4" width="320" height="240" controls></video>
 
 Level Editor:
 
