@@ -25,7 +25,7 @@ Gameplay:
 
 [Watch gameplay]("media/gameplay.mp4")
 
-https://github.com/user-attachments/assets/13b3b56a-8397-4fd5-acca-6d061541b384
+https://github.com/user-attachments/assets/60b06829-32c9-49a6-aa26-28e4d73211ea
 
 
 
@@ -33,10 +33,14 @@ Level Editor:
 
 [Watch level editor](media/level_editor.mp4)
 
+https://github.com/user-attachments/assets/a200c344-fe67-4913-867b-d2d49f37ce01
+
+
 Loading Level:
 
 [Watch custom level](media/custom_level.mp4)
 
+https://github.com/user-attachments/assets/6ff98d62-3cbf-4866-bb9c-280af7023ac2
 
 
 
